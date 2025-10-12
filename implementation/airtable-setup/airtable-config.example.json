@@ -1,0 +1,60 @@
+{
+  "baseName": "Design Pipeline CRM",
+  "description": "Custom CRM for interior design business with 13-step workflow",
+  "tables": [
+    {
+      "tableName": "Clients",
+      "description": "Client contact management and custom requirements",
+      "fields": [
+        {
+          "name": "Client ID",
+          "type": "SingleLineText",
+          "description": "Unique identifier for the client",
+          "required": true,
+          "options": {
+            "isReversed": false
+          }
+        },
+        {
+          "name": "Client Name",
+          "type": "SingleLineText",
+          "description": "Full name of the client",
+          "required": true,
+          "options": {
+            "isReversed": false
+          }
+        },
+        {
+          "name": "Email",
+          "type": "Email",
+          "description": "Primary contact email",
+          "required": true,
+          "options": {
+            "isReversed": false
+          }
+        },
+        {
+          "name": "Phone",
+          "type": "PhoneNumber",
+          "description": "Primary contact phone",
+          "required": true,
+          "options": {
+            "isReversed": false
+          }
+        }
+      ]
+    }
+  ],
+  "configuration": {
+    "airtableService": {
+      "apiKey": "YOUR_AIRTABLE_API_KEY",
+      "baseId": "YOUR_AIRTABLE_BASE_ID",
+      "tables": {
+        "clients": "tblClients",
+        "deals": "tblDeals",
+        "documents": "tblDocuments",
+        "payments": "tblPayments"
+      }
+    }
+  }
+}

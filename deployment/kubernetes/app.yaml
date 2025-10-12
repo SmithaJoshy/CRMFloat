@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: design-pipeline-app
+  namespace: design-pipeline-crm
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: design-pipeline-app
+  template:
+    metadata:
+      labels:
+        app: design-pipeline-app
+    spec:
+      containers:
+      - name: app
+        image: design-pipeline-crm:latest
+        ports:
+        - containerPort: 8081
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "8081"
+        - name: MONGODB_URI
+          value: "mongodb://admin:password@mongodb-service:27017/designpipeline_crm?authSource=admin"
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: app-secret
+              key: jwt-secret
+        - name: FRONTEND_URL
+          value: "https://your-domain.com"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 8081
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: app-logs
+        persistentVolumeClaim:
+          claimName: app-logs-pvc
+      - name: app-uploads
+        persistentVolumeClaim:
+          claimName: app-uploads-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: design-pipeline-service
+  namespace: design-pipeline-crm
+spec:
+  selector:
+    app: design-pipeline-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8081
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: app-logs-pvc
+  namespace: design-pipeline-crm
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: app-uploads-pvc
+  namespace: design-pipeline-crm
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secret
+  namespace: design-pipeline-crm
+type: Opaque
+data:
+  jwt-secret: eW91ci1zdXBlci1zZWNyZXQtand0LWtleS1jaGFuZ2UtdGhpcy1pbi1wcm9kdWN0aW9u  # your-super-secret-jwt-key-change-this-in-production (base64 encoded)

@@ -1,0 +1,105 @@
+# CRMFloat Commercial License
+
+**Copyright © 2024 CRMFloat. All rights reserved.**
+
+---
+
+## License Agreement
+
+This software and associated documentation files (the "Software") are proprietary and confidential.
+
+### Grant of License
+
+Subject to the terms of this license and payment of applicable fees, CRMFloat grants you a limited, non-exclusive, non-transferable license to use the Software.
+
+### Permitted Use
+
+You may:
+- ✅ Use the Software for your internal business operations
+- ✅ Install the Software on servers you own or control
+- ✅ Customize the Software for your business needs
+- ✅ Create backups of the Software
+
+### Restrictions
+
+You may NOT:
+- ❌ Redistribute, sublicense, or resell the Software
+- ❌ Remove or modify any proprietary notices or labels
+- ❌ Reverse engineer, decompile, or disassemble the Software
+- ❌ Use the Software to build a competing product
+- ❌ Share your license with other organizations
+- ❌ Use the Software beyond the scope of your license tier
+
+### License Tiers
+
+#### Free Tier
+- Limited to 3 users, 50 clients, 25 projects
+- For evaluation and small business use
+- No commercial support
+- May not be used for production without upgrading
+
+#### Professional Tier
+- Unlimited users, clients, and projects
+- Full feature access
+- Email support
+- Requires monthly or annual subscription
+
+#### Enterprise Tier
+- All Professional features
+- Custom deployment options
+- Dedicated support
+- Custom integrations
+- Requires custom agreement
+
+### Ownership
+
+The Software is licensed, not sold. CRMFloat retains all right, title, and interest in and to the Software, including all intellectual property rights.
+
+### Support and Updates
+
+- Updates and bug fixes are provided for active subscriptions only
+- Support is provided according to your license tier
+- Updates may require acceptance of new terms
+
+### Warranty Disclaimer
+
+THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.
+
+### Limitation of Liability
+
+IN NO EVENT SHALL CRMFLOAT BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+### Termination
+
+This license is effective until terminated. Your rights under this license will terminate automatically without notice if you fail to comply with any of its terms. Upon termination, you must destroy all copies of the Software.
+
+### Governing Law
+
+This license shall be governed by and construed in accordance with the laws of your jurisdiction.
+
+### Contact
+
+For licensing inquiries, please contact:
+- **Email:** sales@crmfloat.com
+- **Website:** https://crmfloat.com
+- **Phone:** [Your Phone Number]
+
+---
+
+## Third-Party Licenses
+
+CRMFloat uses various open-source libraries, each with their own license:
+
+- React (MIT License)
+- Node.js (MIT License)
+- Express.js (MIT License)
+- Material-UI (MIT License)
+- MongoDB (Server Side Public License)
+- And others - see package.json for complete list
+
+---
+
+**For detailed terms and conditions, visit:** https://crmfloat.com/terms
+
+**Last Updated:** December 2024  
+**Version:** 1.0.0

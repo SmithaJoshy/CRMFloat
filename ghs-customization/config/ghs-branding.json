@@ -1,0 +1,296 @@
+{
+  "company": {
+    "name": "GHS Design Studio",
+    "shortName": "GHS",
+    "tagline": "Creating Beautiful Spaces",
+    "website": "https://ghs.crmfloat.io",
+    "email": "info@ghs.crmfloat.io",
+    "phone": "+1 (555) 123-4567"
+  },
+  "branding": {
+    "logo": {
+      "primary": "/assets/ghs-logo.png",
+      "secondary": "/assets/ghs-logo-white.png",
+      "favicon": "/assets/ghs-favicon.ico",
+      "width": "200px",
+      "height": "60px"
+    },
+    "colors": {
+      "primary": "#2196F3",
+      "secondary": "#4CAF50",
+      "accent": "#FF9800",
+      "warning": "#FF5722",
+      "success": "#4CAF50",
+      "info": "#00BCD4",
+      "light": "#F5F5F5",
+      "dark": "#212121"
+    },
+    "typography": {
+      "fontFamily": "'Inter', 'Segoe UI', 'Roboto', sans-serif",
+      "headingFont": "'Inter', 'Segoe UI', 'Roboto', sans-serif",
+      "bodyFont": "'Inter', 'Segoe UI', 'Roboto', sans-serif"
+    }
+  },
+  "navigation": {
+    "menuItems": [
+      {
+        "text": "Dashboard",
+        "icon": "dashboard",
+        "path": "/dashboard",
+        "category": "main"
+      },
+      {
+        "text": "Leads",
+        "icon": "person_add",
+        "path": "/leads",
+        "category": "sales"
+      },
+      {
+        "text": "Design Pipeline",
+        "icon": "timeline",
+        "path": "/pipeline",
+        "category": "sales"
+      },
+      {
+        "text": "Kanban",
+        "icon": "view_kanban",
+        "path": "/kanban",
+        "category": "project"
+      },
+      {
+        "text": "Workflow",
+        "icon": "account_tree",
+        "path": "/workflow",
+        "category": "project"
+      },
+      {
+        "text": "Designers",
+        "icon": "palette",
+        "path": "/designers",
+        "category": "project"
+      },
+      {
+        "text": "Clients",
+        "icon": "people",
+        "path": "/clients",
+        "category": "customer"
+      },
+      {
+        "text": "Properties",
+        "icon": "home",
+        "path": "/properties",
+        "category": "customer"
+      },
+      {
+        "text": "Warranty",
+        "icon": "verified_user",
+        "path": "/warranty",
+        "category": "customer"
+      },
+      {
+        "text": "Site Visits",
+        "icon": "location_on",
+        "path": "/site-visits",
+        "category": "customer"
+      },
+      {
+        "text": "Materials",
+        "icon": "texture",
+        "path": "/materials",
+        "category": "tools"
+      },
+      {
+        "text": "Vendors",
+        "icon": "store",
+        "path": "/vendors",
+        "category": "tools"
+      },
+      {
+        "text": "Invoices",
+        "icon": "receipt",
+        "path": "/invoices",
+        "category": "finance"
+      },
+      {
+        "text": "Payments",
+        "icon": "payment",
+        "path": "/payments",
+        "category": "finance"
+      },
+      {
+        "text": "Documents",
+        "icon": "folder",
+        "path": "/documents",
+        "category": "tools"
+      }
+    ]
+  },
+  "dashboard": {
+    "title": "GHS Design Studio Dashboard",
+    "subtitle": "Manage your design projects and client relationships",
+    "widgets": [
+      {
+        "type": "pipeline-overview",
+        "title": "Design Pipeline Overview",
+        "size": "large"
+      },
+      {
+        "type": "active-projects",
+        "title": "Active Projects",
+        "size": "medium"
+      },
+      {
+        "type": "designer-performance",
+        "title": "Designer Performance",
+        "size": "medium"
+      },
+      {
+        "type": "warranty-tracking",
+        "title": "Warranty Tracking",
+        "size": "small"
+      },
+      {
+        "type": "site-visits",
+        "title": "Upcoming Site Visits",
+        "size": "small"
+      }
+    ]
+  },
+  "workflow": {
+    "stages": [
+      {
+        "id": "lead-generation",
+        "name": "Lead Generation",
+        "description": "Initial lead capture and qualification",
+        "color": "#2196F3",
+        "icon": "person_add"
+      },
+      {
+        "id": "initial-engagement",
+        "name": "Initial Engagement",
+        "description": "First contact with potential client",
+        "color": "#00BCD4",
+        "icon": "handshake"
+      },
+      {
+        "id": "scheduling-visit",
+        "name": "Scheduling Visit",
+        "description": "Site visit appointment scheduled",
+        "color": "#4CAF50",
+        "icon": "schedule"
+      },
+      {
+        "id": "consultation",
+        "name": "Consultation & Data Capture",
+        "description": "Site visit completed, requirements gathered",
+        "color": "#8BC34A",
+        "icon": "room_preferences"
+      },
+      {
+        "id": "design-brief",
+        "name": "Design Brief & Proposal",
+        "description": "Design proposal and quotation prepared",
+        "color": "#CDDC39",
+        "icon": "description"
+      },
+      {
+        "id": "design-development",
+        "name": "Design Development",
+        "description": "Design concepts and mood boards",
+        "color": "#FFC107",
+        "icon": "palette"
+      },
+      {
+        "id": "detailed-drawings",
+        "name": "Detailed Drawings & Vendor Coordination",
+        "description": "Technical drawings and vendor selection",
+        "color": "#FF9800",
+        "icon": "architecture"
+      },
+      {
+        "id": "project-execution",
+        "name": "Project Execution",
+        "description": "Active construction/implementation",
+        "color": "#FF5722",
+        "icon": "construction"
+      },
+      {
+        "id": "handover",
+        "name": "Handover",
+        "description": "Project completion and client handover",
+        "color": "#9C27B0",
+        "icon": "home"
+      },
+      {
+        "id": "project-closure",
+        "name": "Project Closure",
+        "description": "Final sign-off and documentation",
+        "color": "#4CAF50",
+        "icon": "check_circle"
+      },
+      {
+        "id": "warranty-period",
+        "name": "Warranty Period",
+        "description": "Post-completion warranty support",
+        "color": "#2196F3",
+        "icon": "verified_user"
+      }
+    ]
+  },
+  "forms": {
+    "client": {
+      "title": "Add New Client",
+      "fields": [
+        "name",
+        "email",
+        "phone",
+        "propertyType",
+        "propertySize",
+        "designStyle",
+        "budgetRange"
+      ]
+    },
+    "project": {
+      "title": "Add New Project",
+      "fields": [
+        "projectName",
+        "clientId",
+        "propertyType",
+        "dealType",
+        "projectSize",
+        "designStyle",
+        "roomsIncluded",
+        "siteAddress",
+        "expectedStartDate",
+        "estimatedDuration",
+        "designerAssigned"
+      ]
+    },
+    "designer": {
+      "title": "Add New Designer",
+      "fields": [
+        "name",
+        "email",
+        "phone",
+        "designSpecialty",
+        "experienceYears",
+        "certifications",
+        "portfolioLink"
+      ]
+    }
+  },
+  "notifications": {
+    "siteVisitReminder": {
+      "enabled": true,
+      "message": "Site visit scheduled for {projectName} at {siteAddress} on {date}"
+    },
+    "warrantyExpiry": {
+      "enabled": true,
+      "message": "Warranty for {projectName} expires in {days} days"
+    },
+    "designApproval": {
+      "enabled": true,
+      "message": "Design approval required for {projectName}"
+    }
+  }
+}

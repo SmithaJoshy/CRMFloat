@@ -1,0 +1,41 @@
+{
+  "scenarios": [
+    {
+      "scenarioName": "Payment Reminder System",
+      "description": "Automated payment reminder system for overdue payments",
+      "triggers": [
+        {
+          "type": "Airtable",
+          "action": "Watch Records",
+          "table": "Payments",
+          "filter": "Payment Status != 'Collected' AND Due Date < Today",
+          "frequency": "every 1 hour"
+        }
+      ],
+      "actions": [
+        {
+          "type": "Email",
+          "service": "SMTP",
+          "template": "Payment Reminder",
+          "recipient": "{{Client Email}}",
+          "subject": "Payment Reminder - {{Project Name}}"
+        }
+      ]
+    }
+  ],
+  "configuration": {
+    "emailService": {
+      "provider": "SMTP",
+      "host": "smtp.gmail.com",
+      "port": 587,
+      "username": "YOUR_EMAIL_USERNAME",
+      "password": "YOUR_EMAIL_PASSWORD",
+      "fromEmail": "noreply@company.com",
+      "fromName": "Your Company Name"
+    },
+    "airtableService": {
+      "apiKey": "YOUR_AIRTABLE_API_KEY",
+      "baseId": "YOUR_AIRTABLE_BASE_ID"
+    }
+  }
+}

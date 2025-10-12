@@ -1,0 +1,28 @@
+{
+  "appName": "Design Pipeline CRM",
+  "description": "Custom CRM mobile app for interior design business",
+  "version": "1.0.0",
+  "dataSource": {
+    "type": "Airtable",
+    "baseId": "YOUR_AIRTABLE_BASE_ID",
+    "apiKey": "YOUR_AIRTABLE_API_KEY"
+  },
+  "screens": [
+    {
+      "name": "Dashboard",
+      "type": "dashboard",
+      "description": "Executive dashboard with KPIs and metrics"
+    },
+    {
+      "name": "Pipeline",
+      "type": "kanban",
+      "description": "13-step pipeline view with drag-and-drop functionality"
+    }
+  ],
+  "configuration": {
+    "airtableService": {
+      "apiKey": "YOUR_AIRTABLE_API_KEY",
+      "baseId": "YOUR_AIRTABLE_BASE_ID"
+    }
+  }
+}
