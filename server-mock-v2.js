@@ -8,6 +8,189 @@ const path = require('path');
 const multer = require('multer');
 require('dotenv').config();
 
+// Get industry package from environment
+const INDUSTRY_PACKAGE = process.env.INDUSTRY_PACKAGE || 'generic';
+console.log(`🎯 Loading ${INDUSTRY_PACKAGE} industry package`);
+
+// Industry-specific mock data generator
+const getIndustryData = (industryPackage) => {
+  if (industryPackage === 'interior-design') {
+    // Interior Design specific data (existing GHS data)
+    return {
+      clients: [
+        {
+          _id: '1',
+          name: 'John Smith',
+          email: 'john.smith@email.com',
+          phone: '+1 (555) 123-4567',
+          company: 'Smith Residence',
+          address: '123 Main St, San Francisco, CA 94102',
+          createdAt: new Date('2024-01-15'),
+          updatedAt: new Date('2024-01-15'),
+          tags: ['VIP', 'Repeat Customer'],
+          notes: 'Prefers modern design style, budget: $150K'
+        },
+        {
+          _id: '2',
+          name: 'Sarah Johnson',
+          email: 'sarah.johnson@email.com',
+          phone: '+1 (555) 234-5678',
+          company: 'Johnson Family',
+          address: '456 Oak Ave, Los Angeles, CA 90210',
+          createdAt: new Date('2024-01-20'),
+          updatedAt: new Date('2024-01-20'),
+          tags: ['New Lead'],
+          notes: 'Interested in kitchen renovation, timeline: 3 months'
+        }
+      ],
+      deals: [
+        {
+          _id: '1',
+          dealId: 'DEAL-001',
+          projectName: 'Modern Apartment Design',
+          clientId: '1',
+          clientName: 'John Smith',
+          currentStage: 'Proposal',
+          projectStatus: 'Active',
+          projectValue: 125000,
+          expectedStartDate: new Date('2024-02-01'),
+          expectedCompletionDate: new Date('2024-05-01'),
+          assignedDesigner: 'Alice Designer',
+          priorityLevel: 'High',
+          propertyType: 'Residential',
+          dealType: 'Interior Design',
+          projectSize: 1200,
+          designStyle: 'Modern',
+          roomsIncluded: ['Living Room', 'Kitchen', 'Bedroom'],
+          siteAddress: '123 Main St, San Francisco, CA 94102',
+          createdAt: new Date('2024-01-15'),
+          updatedAt: new Date('2024-01-15'),
+          notes: 'Client prefers minimalist design with natural materials',
+          notesHistory: [
+            {
+              note: 'Initial consultation completed - client very interested',
+              author: 'Alice Designer',
+              timestamp: new Date('2024-01-15T10:00:00Z')
+            }
+          ]
+        }
+      ]
+    };
+  } else {
+    // Generic retail/small business data
+    return {
+      clients: [
+        {
+          _id: '1',
+          name: 'Emily Rodriguez',
+          email: 'emily.rodriguez@email.com',
+          phone: '+1 (555) 123-4567',
+          company: 'Rodriguez & Associates',
+          address: '123 Business Ave, Austin, TX 78701',
+          createdAt: new Date('2024-01-15'),
+          updatedAt: new Date('2024-01-15'),
+          tags: ['VIP', 'Repeat Customer'],
+          notes: 'Marketing consultant, interested in CRM solution'
+        },
+        {
+          _id: '2',
+          name: 'David Kim',
+          email: 'david.kim@email.com',
+          phone: '+1 (555) 234-5678',
+          company: 'Kim Electronics',
+          address: '456 Retail St, Portland, OR 97201',
+          createdAt: new Date('2024-01-20'),
+          updatedAt: new Date('2024-01-20'),
+          tags: ['New Lead'],
+          notes: 'Electronics retailer, needs customer management system'
+        },
+        {
+          _id: '3',
+          name: 'Lisa Thompson',
+          email: 'lisa.thompson@email.com',
+          phone: '+1 (555) 345-6789',
+          company: 'Thompson Consulting',
+          address: '789 Service Rd, Denver, CO 80201',
+          createdAt: new Date('2024-01-25'),
+          updatedAt: new Date('2024-01-25'),
+          tags: ['Hot Lead'],
+          notes: 'Business consultant, evaluating CRM options'
+        }
+      ],
+      deals: [
+        {
+          _id: '1',
+          dealId: 'DEAL-001',
+          projectName: 'CRM Implementation',
+          clientId: '1',
+          clientName: 'Emily Rodriguez',
+          currentStage: 'Proposal',
+          projectStatus: 'Active',
+          projectValue: 5000,
+          expectedStartDate: new Date('2024-02-01'),
+          expectedCompletionDate: new Date('2024-03-01'),
+          assignedDesigner: 'Alex Sales',
+          priorityLevel: 'High',
+          createdAt: new Date('2024-01-15'),
+          updatedAt: new Date('2024-01-15'),
+          notes: 'Client needs basic CRM setup for small team',
+          notesHistory: [
+            {
+              note: 'Initial demo completed - client very interested',
+              author: 'Alex Sales',
+              timestamp: new Date('2024-01-15T10:00:00Z')
+            },
+            {
+              note: 'Follow-up call scheduled for next week',
+              author: 'Alex Sales',
+              timestamp: new Date('2024-01-16T14:30:00Z')
+            }
+          ]
+        },
+        {
+          _id: '2',
+          dealId: 'DEAL-002',
+          projectName: 'Customer Management System',
+          clientId: '2',
+          clientName: 'David Kim',
+          currentStage: 'Lead',
+          projectStatus: 'Active',
+          projectValue: 8000,
+          expectedStartDate: new Date('2024-02-15'),
+          expectedCompletionDate: new Date('2024-04-15'),
+          assignedDesigner: 'Sarah Sales',
+          priorityLevel: 'Medium',
+          createdAt: new Date('2024-01-20'),
+          updatedAt: new Date('2024-01-20'),
+          notes: 'Electronics retailer needs customer tracking system',
+          notesHistory: []
+        },
+        {
+          _id: '3',
+          dealId: 'DEAL-003',
+          projectName: 'Business CRM Setup',
+          clientId: '3',
+          clientName: 'Lisa Thompson',
+          currentStage: 'Qualified',
+          projectStatus: 'Active',
+          projectValue: 12000,
+          expectedStartDate: new Date('2024-03-01'),
+          expectedCompletionDate: new Date('2024-05-01'),
+          assignedDesigner: 'Mike Sales',
+          priorityLevel: 'High',
+          createdAt: new Date('2024-01-25'),
+          updatedAt: new Date('2024-01-25'),
+          notes: 'Consulting firm needs comprehensive CRM solution',
+          notesHistory: []
+        }
+      ]
+    };
+  }
+};
+
+// Load industry-specific data
+const industryData = getIndustryData(INDUSTRY_PACKAGE);
+
 const app = express();
 // Environment-aware port configuration
 const PORT = process.env.PORT || (process.env.NODE_ENV === 'production' ? 8081 : 3002);
@@ -238,7 +421,8 @@ let designers = [
   }
 ];
 
-let clients = [
+// Use industry-specific data instead of static data
+let clients = industryData.clients || [
   {
     _id: '1',
     clientId: 'CLI-001',
@@ -431,7 +615,8 @@ let invoices = [
   }
 ];
 
-let deals = [
+// Use industry-specific data instead of static data
+let deals = industryData.deals || [
   {
     _id: '1',
     dealId: 'DEAL-001',
@@ -3667,6 +3852,7 @@ app.get('*', (req, res) => {
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 CRMFloat Server running on port ${PORT}`);
   console.log(`💧 Simple CRM for Startups`);
+  console.log(`🎯 Industry Package: ${INDUSTRY_PACKAGE.toUpperCase()}`);
   console.log(`📊 Server is ready and listening on all interfaces`);
   console.log(`🔧 API endpoints available at /api`);
   console.log(`📱 Frontend served from root path`);
@@ -3674,8 +3860,13 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`   Email: admin@crmfloat.com`);
   console.log(`   Password: admin123`);
   console.log(`\n💾 Using Enhanced Mock Database (In-Memory)`);
-  console.log(`   - Complete lead-to-warranty workflow`);
-  console.log(`   - Anniversary and reminder system`);
+  if (INDUSTRY_PACKAGE === 'interior-design') {
+    console.log(`   - Interior Design workflow (11 stages)`);
+    console.log(`   - Design-specific features enabled`);
+  } else {
+    console.log(`   - Generic CRM workflow (6 stages)`);
+    console.log(`   - Retail/Small business sample data`);
+  }
   console.log(`   - All data is stored in memory`);
   console.log(`   - Data will be lost when server restarts`);
   console.log(`   - Perfect for testing and development`);
