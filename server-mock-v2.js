@@ -28,7 +28,8 @@ const getIndustryData = (industryPackage) => {
           createdAt: new Date('2024-01-15'),
           updatedAt: new Date('2024-01-15'),
           tags: ['VIP', 'Repeat Customer'],
-          notes: 'Prefers modern design style, budget: $150K'
+          notes: 'Prefers modern design style, budget: $150K',
+          isActive: true
         },
         {
           _id: '2',
@@ -40,7 +41,8 @@ const getIndustryData = (industryPackage) => {
           createdAt: new Date('2024-01-20'),
           updatedAt: new Date('2024-01-20'),
           tags: ['New Lead'],
-          notes: 'Interested in kitchen renovation, timeline: 3 months'
+          notes: 'Interested in kitchen renovation, timeline: 3 months',
+          isActive: true
         }
       ],
       deals: [
@@ -90,7 +92,8 @@ const getIndustryData = (industryPackage) => {
           createdAt: new Date('2024-01-15'),
           updatedAt: new Date('2024-01-15'),
           tags: ['VIP', 'Repeat Customer'],
-          notes: 'Marketing consultant, interested in CRM solution'
+          notes: 'Marketing consultant, interested in CRM solution',
+          isActive: true
         },
         {
           _id: '2',
@@ -102,7 +105,8 @@ const getIndustryData = (industryPackage) => {
           createdAt: new Date('2024-01-20'),
           updatedAt: new Date('2024-01-20'),
           tags: ['New Lead'],
-          notes: 'Electronics retailer, needs customer management system'
+          notes: 'Electronics retailer, needs customer management system',
+          isActive: true
         },
         {
           _id: '3',
@@ -114,7 +118,8 @@ const getIndustryData = (industryPackage) => {
           createdAt: new Date('2024-01-25'),
           updatedAt: new Date('2024-01-25'),
           tags: ['Hot Lead'],
-          notes: 'Business consultant, evaluating CRM options'
+          notes: 'Business consultant, evaluating CRM options',
+          isActive: true
         }
       ],
       deals: [
@@ -134,6 +139,7 @@ const getIndustryData = (industryPackage) => {
           createdAt: new Date('2024-01-15'),
           updatedAt: new Date('2024-01-15'),
           notes: 'Client needs basic CRM setup for small team',
+          isActive: true,
           notesHistory: [
             {
               note: 'Initial demo completed - client very interested',
@@ -163,6 +169,7 @@ const getIndustryData = (industryPackage) => {
           createdAt: new Date('2024-01-20'),
           updatedAt: new Date('2024-01-20'),
           notes: 'Electronics retailer needs customer tracking system',
+          isActive: true,
           notesHistory: []
         },
         {
@@ -181,6 +188,7 @@ const getIndustryData = (industryPackage) => {
           createdAt: new Date('2024-01-25'),
           updatedAt: new Date('2024-01-25'),
           notes: 'Consulting firm needs comprehensive CRM solution',
+          isActive: true,
           notesHistory: []
         }
       ]
@@ -190,6 +198,7 @@ const getIndustryData = (industryPackage) => {
 
 // Load industry-specific data
 const industryData = getIndustryData(INDUSTRY_PACKAGE);
+console.log(`📊 Loaded ${industryData.clients.length} clients and ${industryData.deals.length} deals for ${INDUSTRY_PACKAGE} package`);
 
 const app = express();
 // Environment-aware port configuration
@@ -422,7 +431,7 @@ let designers = [
 ];
 
 // Use industry-specific data instead of static data
-let clients = industryData.clients || [
+let clients = industryData.clients.length > 0 ? industryData.clients : [
   {
     _id: '1',
     clientId: 'CLI-001',
@@ -616,7 +625,7 @@ let invoices = [
 ];
 
 // Use industry-specific data instead of static data
-let deals = industryData.deals || [
+let deals = industryData.deals.length > 0 ? industryData.deals : [
   {
     _id: '1',
     dealId: 'DEAL-001',
@@ -2404,7 +2413,7 @@ app.get('/api/clients', (req, res) => {
   try {
     const { page = 1, limit = 10, search } = req.query;
     
-    let filteredClients = clients.filter(c => c.isActive);
+    let filteredClients = clients.filter(c => c.isActive !== false);
     
     if (search) {
       filteredClients = filteredClients.filter(c => 
@@ -2666,7 +2675,7 @@ app.get('/api/deals', (req, res) => {
   try {
     const { page = 1, limit = 10, stage, status } = req.query;
     
-    let filteredDeals = deals.filter(d => d.isActive);
+    let filteredDeals = deals.filter(d => d.isActive !== false);
     
     if (stage) {
       filteredDeals = filteredDeals.filter(d => d.currentStage === stage);

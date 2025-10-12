@@ -4,6 +4,8 @@
 
 Both generic and GHS customization now have proper sample data loaded based on the industry package.
 
+**✅ FIXED:** API filtering issues resolved - both clients and deals now load correctly!
+
 ---
 
 ## 🌐 **Testing URLs**
