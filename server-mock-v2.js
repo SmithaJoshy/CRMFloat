@@ -68,6 +68,7 @@ const getIndustryData = (industryPackage) => {
           createdAt: new Date('2024-01-15'),
           updatedAt: new Date('2024-01-15'),
           notes: 'Client prefers minimalist design with natural materials',
+          isActive: true,
           notesHistory: [
             {
               note: 'Initial consultation completed - client very interested',
@@ -140,6 +141,13 @@ const getIndustryData = (industryPackage) => {
           updatedAt: new Date('2024-01-15'),
           notes: 'Client needs basic CRM setup for small team',
           isActive: true,
+          // Add missing fields that frontend expects
+          projectSize: 100,
+          propertyType: 'Office',
+          dealType: 'Software Implementation',
+          designStyle: 'Modern',
+          roomsIncluded: ['Office Space'],
+          siteAddress: '123 Business Ave, Austin, TX 78701',
           notesHistory: [
             {
               note: 'Initial demo completed - client very interested',
@@ -170,6 +178,13 @@ const getIndustryData = (industryPackage) => {
           updatedAt: new Date('2024-01-20'),
           notes: 'Electronics retailer needs customer tracking system',
           isActive: true,
+          // Add missing fields that frontend expects
+          projectSize: 150,
+          propertyType: 'Retail',
+          dealType: 'Software Implementation',
+          designStyle: 'Contemporary',
+          roomsIncluded: ['Retail Space'],
+          siteAddress: '456 Retail St, Portland, OR 97201',
           notesHistory: []
         },
         {
@@ -189,6 +204,13 @@ const getIndustryData = (industryPackage) => {
           updatedAt: new Date('2024-01-25'),
           notes: 'Consulting firm needs comprehensive CRM solution',
           isActive: true,
+          // Add missing fields that frontend expects
+          projectSize: 200,
+          propertyType: 'Office',
+          dealType: 'Software Implementation',
+          designStyle: 'Professional',
+          roomsIncluded: ['Consulting Office'],
+          siteAddress: '789 Service Rd, Denver, CO 80201',
           notesHistory: []
         }
       ]
