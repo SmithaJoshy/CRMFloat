@@ -137,12 +137,12 @@ const Kanban: React.FC = () => {
   );
 
   const stages = [
-    'Lead',
-    'Qualified',
-    'Proposal',
-    'Negotiation',
-    'Closed Won',
-    'Closed Lost'
+    'ToDo',
+    'In Progress',
+    'Blocked',
+    'Paused',
+    'Done',
+    'Canceled'
   ];
 
   useEffect(() => {
@@ -335,7 +335,7 @@ const Kanban: React.FC = () => {
       const response = await api.post('/deals', {
         ...newProject,
         projectName: newProject.projectName.trim(),
-        currentStage: 'Lead',
+        currentStage: 'ToDo',
         projectStatus: 'Active',
         clientName: client?.name || 'Unknown Client'
       });
