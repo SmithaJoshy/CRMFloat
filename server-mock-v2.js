@@ -29,7 +29,12 @@ const getIndustryData = (industryPackage) => {
           updatedAt: new Date('2024-01-15'),
           tags: ['VIP', 'Repeat Customer'],
           notes: 'Prefers modern design style, budget: $150K',
-          isActive: true
+          isActive: true,
+          // Add missing fields that frontend expects
+          clientId: 'CLI-001',
+          targetBudget: 150000,
+          leadSource: 'Website',
+          stylePreferences: ['Modern', 'Minimalist']
         },
         {
           _id: '2',
@@ -42,7 +47,12 @@ const getIndustryData = (industryPackage) => {
           updatedAt: new Date('2024-01-20'),
           tags: ['New Lead'],
           notes: 'Interested in kitchen renovation, timeline: 3 months',
-          isActive: true
+          isActive: true,
+          // Add missing fields that frontend expects
+          clientId: 'CLI-002',
+          targetBudget: 75000,
+          leadSource: 'Referral',
+          stylePreferences: ['Contemporary', 'Family-friendly']
         }
       ],
       deals: [
@@ -94,7 +104,12 @@ const getIndustryData = (industryPackage) => {
           updatedAt: new Date('2024-01-15'),
           tags: ['VIP', 'Repeat Customer'],
           notes: 'Marketing consultant, interested in CRM solution',
-          isActive: true
+          isActive: true,
+          // Add missing fields that frontend expects
+          clientId: 'CLI-001',
+          targetBudget: 5000,
+          leadSource: 'Website',
+          stylePreferences: ['Modern', 'Professional']
         },
         {
           _id: '2',
@@ -107,7 +122,12 @@ const getIndustryData = (industryPackage) => {
           updatedAt: new Date('2024-01-20'),
           tags: ['New Lead'],
           notes: 'Electronics retailer, needs customer management system',
-          isActive: true
+          isActive: true,
+          // Add missing fields that frontend expects
+          clientId: 'CLI-002',
+          targetBudget: 8000,
+          leadSource: 'Referral',
+          stylePreferences: ['Contemporary', 'Functional']
         },
         {
           _id: '3',
@@ -120,7 +140,12 @@ const getIndustryData = (industryPackage) => {
           updatedAt: new Date('2024-01-25'),
           tags: ['Hot Lead'],
           notes: 'Business consultant, evaluating CRM options',
-          isActive: true
+          isActive: true,
+          // Add missing fields that frontend expects
+          clientId: 'CLI-003',
+          targetBudget: 12000,
+          leadSource: 'Google Ads',
+          stylePreferences: ['Professional', 'Clean']
         }
       ],
       deals: [
