@@ -33,6 +33,7 @@ const getIndustryData = (industryPackage) => {
           // Add missing fields that frontend expects
           clientId: 'CLI-001',
           targetBudget: 150000,
+          totalValue: 150000,
           leadSource: 'Website',
           stylePreferences: ['Modern', 'Minimalist']
         },
@@ -51,6 +52,7 @@ const getIndustryData = (industryPackage) => {
           // Add missing fields that frontend expects
           clientId: 'CLI-002',
           targetBudget: 75000,
+          totalValue: 75000,
           leadSource: 'Referral',
           stylePreferences: ['Contemporary', 'Family-friendly']
         }
@@ -65,6 +67,7 @@ const getIndustryData = (industryPackage) => {
           currentStage: 'Proposal',
           projectStatus: 'Active',
           projectValue: 125000,
+          totalProjectValue: 125000,
           expectedStartDate: new Date('2024-02-01'),
           expectedCompletionDate: new Date('2024-05-01'),
           assignedDesigner: 'Alice Designer',
@@ -87,7 +90,44 @@ const getIndustryData = (industryPackage) => {
             }
           ]
         }
-      ]
+      ],
+      leads: [
+        {
+          _id: '1',
+          leadId: 'LEAD-001',
+          name: 'John Smith',
+          email: 'john.smith@email.com',
+          phone: '+1 (555) 123-4567',
+          company: 'Smith Residence',
+          leadSource: 'Website',
+          leadStatus: 'New Lead',
+          budget: 150000,
+          projectType: 'Residential',
+          requirements: 'Modern apartment design with contemporary furniture',
+          assignedTo: 'Alice Designer',
+          priority: 'High',
+          followUpDate: '2024-01-15',
+          notes: 'Interested in modern design style',
+          createdAt: '2024-01-10T10:00:00Z',
+          isActive: true
+        }
+      ],
+      designers: [
+        {
+          _id: '1',
+          name: 'Alice Designer',
+          email: 'alice@designstudio.com',
+          phone: '+1 (555) 100-0001',
+          role: 'Senior Designer',
+          specialization: 'Modern Design',
+          experience: '5 years',
+          isActive: true,
+          availability: 'Available'
+        }
+      ],
+      invoices: [],
+      payments: [],
+      documents: []
     };
   } else {
     // Generic retail/small business data
@@ -108,6 +148,7 @@ const getIndustryData = (industryPackage) => {
           // Add missing fields that frontend expects
           clientId: 'CLI-001',
           targetBudget: 5000,
+          totalValue: 5000,
           leadSource: 'Website',
           stylePreferences: ['Modern', 'Professional']
         },
@@ -126,6 +167,7 @@ const getIndustryData = (industryPackage) => {
           // Add missing fields that frontend expects
           clientId: 'CLI-002',
           targetBudget: 8000,
+          totalValue: 8000,
           leadSource: 'Referral',
           stylePreferences: ['Contemporary', 'Functional']
         },
@@ -144,6 +186,7 @@ const getIndustryData = (industryPackage) => {
           // Add missing fields that frontend expects
           clientId: 'CLI-003',
           targetBudget: 12000,
+          totalValue: 12000,
           leadSource: 'Google Ads',
           stylePreferences: ['Professional', 'Clean']
         }
@@ -158,6 +201,7 @@ const getIndustryData = (industryPackage) => {
           currentStage: 'Proposal',
           projectStatus: 'Active',
           projectValue: 5000,
+          totalProjectValue: 5000,
           expectedStartDate: new Date('2024-02-01'),
           expectedCompletionDate: new Date('2024-03-01'),
           assignedDesigner: 'Alex Sales',
@@ -195,6 +239,7 @@ const getIndustryData = (industryPackage) => {
           currentStage: 'Lead',
           projectStatus: 'Active',
           projectValue: 8000,
+          totalProjectValue: 8000,
           expectedStartDate: new Date('2024-02-15'),
           expectedCompletionDate: new Date('2024-04-15'),
           assignedDesigner: 'Sarah Sales',
@@ -221,6 +266,7 @@ const getIndustryData = (industryPackage) => {
           currentStage: 'Qualified',
           projectStatus: 'Active',
           projectValue: 12000,
+          totalProjectValue: 12000,
           expectedStartDate: new Date('2024-03-01'),
           expectedCompletionDate: new Date('2024-05-01'),
           assignedDesigner: 'Mike Sales',
@@ -238,14 +284,111 @@ const getIndustryData = (industryPackage) => {
           siteAddress: '789 Service Rd, Denver, CO 80201',
           notesHistory: []
         }
-      ]
+      ],
+      leads: [
+        {
+          _id: '1',
+          leadId: 'LEAD-001',
+          name: 'Emily Rodriguez',
+          email: 'emily.rodriguez@email.com',
+          phone: '+1 (555) 123-4567',
+          company: 'Rodriguez & Associates',
+          leadSource: 'Website',
+          leadStatus: 'New Lead',
+          budget: 5000,
+          projectType: 'Software',
+          requirements: 'CRM implementation for small marketing team',
+          assignedTo: 'Alex Sales',
+          priority: 'High',
+          followUpDate: '2024-01-15',
+          notes: 'Marketing consultant, interested in CRM solution',
+          createdAt: '2024-01-10T10:00:00Z',
+          isActive: true
+        },
+        {
+          _id: '2',
+          leadId: 'LEAD-002',
+          name: 'David Kim',
+          email: 'david.kim@email.com',
+          phone: '+1 (555) 234-5678',
+          company: 'Kim Electronics',
+          leadSource: 'Referral',
+          leadStatus: 'Contacted',
+          budget: 8000,
+          projectType: 'Software',
+          requirements: 'Customer management system for electronics retailer',
+          assignedTo: 'Sarah Sales',
+          priority: 'Medium',
+          followUpDate: '2024-01-20',
+          notes: 'Electronics retailer, needs customer tracking system',
+          createdAt: '2024-01-08T14:30:00Z',
+          isActive: true
+        },
+        {
+          _id: '3',
+          leadId: 'LEAD-003',
+          name: 'Lisa Thompson',
+          email: 'lisa.thompson@email.com',
+          phone: '+1 (555) 345-6789',
+          company: 'Thompson Consulting',
+          leadSource: 'Google Ads',
+          leadStatus: 'Qualified',
+          budget: 12000,
+          projectType: 'Software',
+          requirements: 'Comprehensive CRM solution for consulting firm',
+          assignedTo: 'Mike Sales',
+          priority: 'High',
+          followUpDate: '2024-01-25',
+          notes: 'Business consultant, evaluating CRM options',
+          createdAt: '2024-01-05T09:15:00Z',
+          isActive: true
+        }
+      ],
+      designers: [
+        {
+          _id: '1',
+          name: 'Alex Sales',
+          email: 'alex@crmfloat.com',
+          phone: '+1 (555) 200-0001',
+          role: 'Sales Manager',
+          specialization: 'CRM Implementation',
+          experience: '3 years',
+          isActive: true,
+          availability: 'Available'
+        },
+        {
+          _id: '2',
+          name: 'Sarah Sales',
+          email: 'sarah@crmfloat.com',
+          phone: '+1 (555) 200-0002',
+          role: 'Sales Representative',
+          specialization: 'Customer Management',
+          experience: '2 years',
+          isActive: true,
+          availability: 'Available'
+        },
+        {
+          _id: '3',
+          name: 'Mike Sales',
+          email: 'mike@crmfloat.com',
+          phone: '+1 (555) 200-0003',
+          role: 'Senior Sales',
+          specialization: 'Business Solutions',
+          experience: '4 years',
+          isActive: true,
+          availability: 'Available'
+        }
+      ],
+      invoices: [],
+      payments: [],
+      documents: []
     };
   }
 };
 
 // Load industry-specific data
 const industryData = getIndustryData(INDUSTRY_PACKAGE);
-console.log(`📊 Loaded ${industryData.clients.length} clients and ${industryData.deals.length} deals for ${INDUSTRY_PACKAGE} package`);
+console.log(`📊 Loaded ${industryData.clients.length} clients, ${industryData.deals.length} deals, and ${industryData.leads.length} leads for ${INDUSTRY_PACKAGE} package`);
 
 const app = express();
 // Environment-aware port configuration
@@ -305,7 +448,8 @@ let users = [
 ];
 
 // Enhanced data structure with proper relationships
-let leads = [
+// Use industry-specific data instead of static data
+let leads = industryData.leads.length > 0 ? industryData.leads : [
   {
     _id: '1',
     leadId: 'LEAD-001',
@@ -423,7 +567,8 @@ let leads = [
 ];
 
 // Mock Designers Data
-let designers = [
+// Use industry-specific data instead of static data
+let designers = industryData.designers.length > 0 ? industryData.designers : [
   {
     id: '1',
     name: 'Sarah Johnson',
@@ -554,7 +699,8 @@ let clients = industryData.clients.length > 0 ? industryData.clients : [
 ];
 
 // Enhanced invoice data with multiple invoices per project
-let invoices = [
+// Use industry-specific data instead of static data
+let invoices = industryData.invoices.length > 0 ? industryData.invoices : [
   {
     _id: "INV-001",
     invoiceNumber: "INV-2024-001",
@@ -602,6 +748,7 @@ let invoices = [
     clientName: "Sarah Wilson",
     invoiceStage: "Design Fee",
     amount: 48000,
+    totalAmount: 48000,
     dueDate: "2024-02-20",
     paymentStatus: "Overdue",
     paymentMethod: null,
@@ -1707,7 +1854,8 @@ let deals = industryData.deals.length > 0 ? industryData.deals : [
   }
 ];
 
-let payments = [
+// Use industry-specific data instead of static data
+let payments = industryData.payments.length > 0 ? industryData.payments : [
   {
     _id: '1',
     paymentId: 'PAY-001',
@@ -1716,6 +1864,7 @@ let payments = [
     clientName: 'John Smith',
     invoiceNumber: 'INV-2024-001',
     amount: 48000,
+    totalAmount: 48000,
     paymentStage: 'Design Fee',
     dueDate: '2024-01-25',
     status: 'Paid',
@@ -1759,6 +1908,7 @@ let payments = [
     clientName: 'Rajesh Kumar',
     invoiceNumber: 'INV-2024-004',
     amount: 480000,
+    totalAmount: 480000,
     paymentStage: '40% Interim',
     dueDate: '2024-02-20',
     status: 'Paid',
@@ -3387,7 +3537,8 @@ app.put('/api/valued-customers/:id/follow-up', (req, res) => {
 });
 
 // Sample documents data
-let documents = [
+// Use industry-specific data instead of static data
+let documents = industryData.documents.length > 0 ? industryData.documents : [
   {
     _id: '1',
     documentId: 'DOC-001',
