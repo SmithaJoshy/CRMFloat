@@ -279,6 +279,8 @@ const getIndustryData = (industryPackage) => {
           phone: '+1 (555) 100-0001',
           role: 'Senior Designer',
           specialization: 'Modern Design',
+          specializations: ['Modern Design', 'Minimalist', 'Contemporary'],
+          skills: ['Space Planning', '3D Visualization', 'Color Theory', 'Material Selection'],
           experience: '5 years',
           isActive: true,
           availability: 'Available'
@@ -290,6 +292,8 @@ const getIndustryData = (industryPackage) => {
           phone: '+1 (555) 100-0002',
           role: 'Lead Architect',
           specialization: 'Commercial Design',
+          specializations: ['Commercial Design', 'Office Spaces', 'Retail'],
+          skills: ['Architectural Planning', 'Building Codes', 'Project Management', 'Client Relations'],
           experience: '8 years',
           isActive: true,
           availability: 'Available'
@@ -301,6 +305,8 @@ const getIndustryData = (industryPackage) => {
           phone: '+1 (555) 100-0003',
           role: 'Interior Designer',
           specialization: 'Luxury Residential',
+          specializations: ['Luxury Residential', 'High-end Finishes', 'Custom Furniture'],
+          skills: ['Luxury Design', 'Custom Millwork', 'Furniture Design', 'Lighting Design'],
           experience: '6 years',
           isActive: true,
           availability: 'Busy'

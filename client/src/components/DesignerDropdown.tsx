@@ -135,9 +135,9 @@ const DesignerDropdown: React.FC<DesignerDropdownProps> = ({
                     />
                   )}
                 </Box>
-                {designer.specializations.length > 0 && (
+                {(designer.specializations || []).length > 0 && (
                   <Box display="flex" gap={0.5} mt={0.5}>
-                    {designer.specializations.slice(0, 2).map((spec, index) => (
+                    {(designer.specializations || []).slice(0, 2).map((spec, index) => (
                       <Chip
                         key={index}
                         label={spec}
