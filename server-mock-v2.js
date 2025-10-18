@@ -10,7 +10,19 @@ require('dotenv').config();
 
 // Get industry package from environment
 const INDUSTRY_PACKAGE = process.env.INDUSTRY_PACKAGE || 'generic';
+const TENANT_ID = process.env.TENANT_ID || 'generic';
 console.log(`🎯 Loading ${INDUSTRY_PACKAGE} industry package`);
+
+// Load GHS branding configuration if it's a GHS tenant
+let ghsBranding = null;
+if (TENANT_ID === 'ghs' || INDUSTRY_PACKAGE === 'interior-design') {
+  try {
+    ghsBranding = require('./ghs-customization/config/ghs-branding.json');
+    console.log(`🎨 GHS branding loaded: ${ghsBranding.company.name}`);
+  } catch (error) {
+    console.log(`⚠️  GHS branding not found, using default branding`);
+  }
+}
 
 // Industry-specific mock data generator
 const getIndustryData = (industryPackage) => {
@@ -423,13 +435,20 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 
 // Health check endpoint for deployment
 app.get('/api/health', (req, res) => {
+  const branding = ghsBranding || {
+    company: { name: 'CRMFloat', shortName: 'CRMFloat' },
+    company: { tagline: 'Simple CRM for Startups' }
+  };
+  
   res.status(200).json({ 
     status: 'OK', 
-    message: 'CRMFloat Server is running',
-    product: 'CRMFloat',
-    tagline: 'Simple CRM for Startups',
+    message: `${branding.company.name} Server is running`,
+    product: branding.company.shortName,
+    tagline: branding.company.tagline,
     timestamp: new Date().toISOString(),
-    version: '1.0.0'
+    version: '1.0.0',
+    industry: INDUSTRY_PACKAGE,
+    tenant: TENANT_ID
   });
 });
 
@@ -4057,19 +4076,30 @@ app.get('*', (req, res) => {
 
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 CRMFloat Server running on port ${PORT}`);
-  console.log(`💧 Simple CRM for Startups`);
+  const branding = ghsBranding || {
+    company: { name: 'CRMFloat', shortName: 'CRMFloat' },
+    company: { tagline: 'Simple CRM for Startups' }
+  };
+  
+  console.log(`🚀 ${branding.company.name} Server running on port ${PORT}`);
+  console.log(`🎨 ${branding.company.tagline}`);
   console.log(`🎯 Industry Package: ${INDUSTRY_PACKAGE.toUpperCase()}`);
+  console.log(`🏢 Tenant ID: ${TENANT_ID.toUpperCase()}`);
   console.log(`📊 Server is ready and listening on all interfaces`);
   console.log(`🔧 API endpoints available at /api`);
   console.log(`📱 Frontend served from root path`);
   console.log(`\n🔑 Demo Login Credentials:`);
-  console.log(`   Email: admin@crmfloat.com`);
+  if (TENANT_ID === 'ghs') {
+    console.log(`   Email: admin@ghs.crmfloat.io`);
+  } else {
+    console.log(`   Email: admin@crmfloat.com`);
+  }
   console.log(`   Password: admin123`);
   console.log(`\n💾 Using Enhanced Mock Database (In-Memory)`);
   if (INDUSTRY_PACKAGE === 'interior-design') {
     console.log(`   - Interior Design workflow (11 stages)`);
     console.log(`   - Design-specific features enabled`);
+    console.log(`   - GHS branding and customization`);
   } else {
     console.log(`   - Generic CRM workflow (6 stages)`);
     console.log(`   - Retail/Small business sample data`);
