@@ -50,9 +50,12 @@ const Login: React.FC = () => {
         <CardContent sx={{ p: 4 }}>
           <Box sx={{ textAlign: 'center', mb: 3 }}>
             <Typography variant="h4" component="h1" gutterBottom>
-              Design Pipeline CRM
+              GHS Design Studio
             </Typography>
             <Typography variant="body2" color="text.secondary">
+              Creating Beautiful Spaces
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
               Sign in to your account
             </Typography>
           </Box>
@@ -101,7 +104,7 @@ const Login: React.FC = () => {
               Demo Credentials:
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Email: admin@designpipeline.com
+              Email: admin@ghs.crmfloat.io
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Password: admin123

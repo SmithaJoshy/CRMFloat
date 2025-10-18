@@ -9,9 +9,10 @@ const multer = require('multer');
 require('dotenv').config();
 
 // Get industry package from environment
-// Design Pipeline CRM - Original Configuration
+// GHS Design Studio Configuration
 const INDUSTRY_PACKAGE = 'interior-design';
-console.log(`🎯 Loading ${INDUSTRY_PACKAGE} industry package`);
+const TENANT_ID = 'ghs';
+console.log(`🎯 Loading ${INDUSTRY_PACKAGE} industry package for GHS`);
 
 // Industry-specific mock data generator
 const getIndustryData = (industryPackage) => {
@@ -535,7 +536,7 @@ const getIndustryData = (industryPackage) => {
         {
           _id: '1',
           name: 'Alex Sales',
-          email: 'alex@crmfloat.com',
+          email: 'alex@designstudio.com',
           phone: '+1 (555) 200-0001',
           role: 'Sales Manager',
           specialization: 'CRM Implementation',
@@ -546,7 +547,7 @@ const getIndustryData = (industryPackage) => {
         {
           _id: '2',
           name: 'Sarah Sales',
-          email: 'sarah@crmfloat.com',
+          email: 'sarah@designstudio.com',
           phone: '+1 (555) 200-0002',
           role: 'Sales Representative',
           specialization: 'Customer Management',
@@ -557,7 +558,7 @@ const getIndustryData = (industryPackage) => {
         {
           _id: '3',
           name: 'Mike Sales',
-          email: 'mike@crmfloat.com',
+          email: 'mike@designstudio.com',
           phone: '+1 (555) 200-0003',
           role: 'Senior Sales',
           specialization: 'Business Solutions',
@@ -610,11 +611,11 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 
 // Health check endpoint for deployment
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ 
-    status: 'OK', 
-    message: 'Design Pipeline CRM Server is running',
-    product: 'Design Pipeline CRM',
-    tagline: 'Interior Design Project Management',
+  res.status(200).json({
+    status: 'OK',
+    message: 'GHS Design Studio Server is running',
+    product: 'GHS Design Studio',
+    tagline: 'Creating Beautiful Spaces',
     timestamp: new Date().toISOString(),
     version: '1.0.0'
   });
@@ -710,7 +711,7 @@ let users = [
   {
     _id: '1',
     name: 'Admin User',
-    email: 'admin@designpipeline.com',
+    email: 'admin@ghs.crmfloat.io',
     password: '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // admin123
     role: 'Founder/Executive',
     isActive: true,
@@ -844,7 +845,7 @@ let designers = industryData.designers.length > 0 ? industryData.designers : [
   {
     id: '1',
     name: 'Sarah Johnson',
-    email: 'sarah@crmfloat.com',
+    email: 'sarah@designstudio.com',
     phone: '+91-9876543211',
     role: 'Senior Interior Designer',
     department: 'Design',
@@ -861,7 +862,7 @@ let designers = industryData.designers.length > 0 ? industryData.designers : [
   {
     id: '2',
     name: 'Michael Chen',
-    email: 'michael@crmfloat.com',
+    email: 'michael@designstudio.com',
     phone: '+91-9876543212',
     role: 'Junior Interior Designer',
     department: 'Design',
@@ -878,7 +879,7 @@ let designers = industryData.designers.length > 0 ? industryData.designers : [
   {
     id: '3',
     name: 'Priya Sharma',
-    email: 'priya@crmfloat.com',
+    email: 'priya@designstudio.com',
     phone: '+91-9876543213',
     role: 'Design Lead',
     department: 'Design',
@@ -4329,18 +4330,20 @@ app.get('*', (req, res) => {
 
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Design Pipeline CRM Server running on port ${PORT}`);
-  console.log(`🎨 Interior Design Project Management`);
+  console.log(`🚀 GHS Design Studio Server running on port ${PORT}`);
+  console.log(`🎨 Creating Beautiful Spaces`);
   console.log(`🎯 Industry Package: ${INDUSTRY_PACKAGE.toUpperCase()}`);
+  console.log(`🏢 Tenant ID: ${TENANT_ID.toUpperCase()}`);
   console.log(`📊 Server is ready and listening on all interfaces`);
   console.log(`🔧 API endpoints available at /api`);
   console.log(`📱 Frontend served from root path`);
   console.log(`\n🔑 Demo Login Credentials:`);
-  console.log(`   Email: admin@designpipeline.com`);
+  console.log(`   Email: admin@ghs.crmfloat.io`);
   console.log(`   Password: admin123`);
   console.log(`\n💾 Using Enhanced Mock Database (In-Memory)`);
   console.log(`   - Interior Design workflow (11 stages)`);
   console.log(`   - Design-specific features enabled`);
+  console.log(`   - GHS branding and customization`);
   console.log(`   - All data is stored in memory`);
   console.log(`   - Data will be lost when server restarts`);
   console.log(`   - Perfect for testing and development`);
