@@ -50,12 +50,9 @@ const Login: React.FC = () => {
         <CardContent sx={{ p: 4 }}>
           <Box sx={{ textAlign: 'center', mb: 3 }}>
             <Typography variant="h4" component="h1" gutterBottom>
-              GHS Design Studio
+              Design Pipeline CRM
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Creating Beautiful Spaces
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
               Sign in to your account
             </Typography>
           </Box>

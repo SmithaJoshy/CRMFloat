@@ -9,19 +9,9 @@ const multer = require('multer');
 require('dotenv').config();
 
 // Get industry package from environment
-// GHS Interior Design CRM - Main Configuration
+// Design Pipeline CRM - Original Configuration
 const INDUSTRY_PACKAGE = 'interior-design';
-const TENANT_ID = 'ghs';
 console.log(`🎯 Loading ${INDUSTRY_PACKAGE} industry package`);
-
-// Load GHS branding configuration
-let ghsBranding = null;
-try {
-  ghsBranding = require('./ghs-customization/config/ghs-branding.json');
-  console.log(`🎨 GHS branding loaded: ${ghsBranding.company.name}`);
-} catch (error) {
-  console.log(`⚠️  GHS branding not found, using default branding`);
-}
 
 // Industry-specific mock data generator
 const getIndustryData = (industryPackage) => {
@@ -434,20 +424,13 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 
 // Health check endpoint for deployment
 app.get('/api/health', (req, res) => {
-  const branding = ghsBranding || {
-    company: { name: 'GHS Design Studio', shortName: 'GHS' },
-    company: { tagline: 'Creating Beautiful Spaces' }
-  };
-  
   res.status(200).json({ 
     status: 'OK', 
-    message: `${branding.company.name} Server is running`,
-    product: branding.company.shortName,
-    tagline: branding.company.tagline,
+    message: 'Design Pipeline CRM Server is running',
+    product: 'Design Pipeline CRM',
+    tagline: 'Interior Design Project Management',
     timestamp: new Date().toISOString(),
-    version: '1.0.0',
-    industry: INDUSTRY_PACKAGE,
-    tenant: TENANT_ID
+    version: '1.0.0'
   });
 });
 
@@ -4075,25 +4058,18 @@ app.get('*', (req, res) => {
 
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
-  const branding = ghsBranding || {
-    company: { name: 'GHS Design Studio', shortName: 'GHS' },
-    company: { tagline: 'Creating Beautiful Spaces' }
-  };
-  
-  console.log(`🚀 ${branding.company.name} Server running on port ${PORT}`);
-  console.log(`🎨 ${branding.company.tagline}`);
+  console.log(`🚀 Design Pipeline CRM Server running on port ${PORT}`);
+  console.log(`🎨 Interior Design Project Management`);
   console.log(`🎯 Industry Package: ${INDUSTRY_PACKAGE.toUpperCase()}`);
-  console.log(`🏢 Tenant ID: ${TENANT_ID.toUpperCase()}`);
   console.log(`📊 Server is ready and listening on all interfaces`);
   console.log(`🔧 API endpoints available at /api`);
   console.log(`📱 Frontend served from root path`);
   console.log(`\n🔑 Demo Login Credentials:`);
-  console.log(`   Email: admin@ghs.crmfloat.io`);
+  console.log(`   Email: admin@designpipeline.com`);
   console.log(`   Password: admin123`);
   console.log(`\n💾 Using Enhanced Mock Database (In-Memory)`);
   console.log(`   - Interior Design workflow (11 stages)`);
   console.log(`   - Design-specific features enabled`);
-  console.log(`   - GHS branding and customization`);
   console.log(`   - All data is stored in memory`);
   console.log(`   - Data will be lost when server restarts`);
   console.log(`   - Perfect for testing and development`);
