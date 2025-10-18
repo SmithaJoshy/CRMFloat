@@ -42,7 +42,6 @@ import {
   FilterList as FilterIcon
 } from '@mui/icons-material';
 import { api } from '../services/api';
-import { ClientDropdown, ProjectDropdown } from '../components/DataDropdowns';
 
 interface Invoice {
   _id: string;
@@ -76,7 +75,6 @@ interface Project {
 const Invoices: React.FC = () => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
-  const [clients, setClients] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
@@ -89,7 +87,6 @@ const Invoices: React.FC = () => {
   const [filterStage, setFilterStage] = useState<string>('all');
   const [newInvoice, setNewInvoice] = useState({
     projectId: '',
-    clientId: '',
     clientName: '',
     invoiceStage: '',
     amount: '',
@@ -121,7 +118,6 @@ const Invoices: React.FC = () => {
   useEffect(() => {
     fetchInvoices();
     fetchProjects();
-    fetchClients();
   }, []);
 
   const fetchInvoices = async () => {
@@ -145,20 +141,10 @@ const Invoices: React.FC = () => {
     }
   };
 
-  const fetchClients = async () => {
-    try {
-      const response = await api.get('/clients');
-      setClients(response.data.clients || []);
-    } catch (err: any) {
-      console.error('Failed to fetch clients:', err);
-    }
-  };
-
   const handleCreateInvoice = () => {
     setEditingInvoice(null);
     setNewInvoice({
       projectId: '',
-      clientId: '',
       clientName: '',
       invoiceStage: '',
       amount: '',
@@ -517,32 +503,26 @@ const Invoices: React.FC = () => {
         </DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
-            <ProjectDropdown
-              value={newInvoice.projectId}
-              onChange={(value) => {
-                const selectedProject = projects.find(p => p._id === value);
-                setNewInvoice({ 
-                  ...newInvoice, 
-                  projectId: value,
-                  clientName: selectedProject?.clientName || ''
-                });
-              }}
-              label="Project"
-              required
-            />
+            <FormControl fullWidth>
+              <InputLabel>Project</InputLabel>
+              <Select
+                value={newInvoice.projectId}
+                onChange={(e) => setNewInvoice({ ...newInvoice, projectId: e.target.value })}
+                label="Project"
+              >
+                {projects.map((project) => (
+                  <MenuItem key={project._id} value={project._id}>
+                    {project.projectName} - {project.clientName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             
-            <ClientDropdown
-              value={newInvoice.clientId || ''}
-              onChange={(value) => {
-                const selectedClient = clients.find(c => c._id === value);
-                setNewInvoice({ 
-                  ...newInvoice, 
-                  clientId: value,
-                  clientName: selectedClient?.name || ''
-                });
-              }}
-              label="Client"
-              required
+            <TextField
+              fullWidth
+              label="Client Name"
+              value={newInvoice.clientName}
+              onChange={(e) => setNewInvoice({ ...newInvoice, clientName: e.target.value })}
             />
             
             <FormControl fullWidth>
@@ -583,206 +563,6 @@ const Invoices: React.FC = () => {
           <Button onClick={handleSaveInvoice} variant="contained">
             {editingInvoice ? 'Update' : 'Create'} Invoice
           </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* View Invoice Dialog */}
-      <Dialog open={openViewDialog} onClose={() => setOpenViewDialog(false)} maxWidth="md" fullWidth>
-        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <ReceiptIcon />
-          Invoice Details - {selectedInvoice?.invoiceNumber}
-        </DialogTitle>
-        <DialogContent>
-          {selectedInvoice && (
-            <Box sx={{ pt: 2 }}>
-              {/* Invoice Header */}
-              <Box sx={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'flex-start',
-                mb: 3,
-                p: 2,
-                backgroundColor: '#f8f9fa',
-                borderRadius: 1,
-                border: '1px solid #e9ecef'
-              }}>
-                <Box>
-                  <Typography variant="h6" gutterBottom>
-                    Invoice #{selectedInvoice.invoiceNumber}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Project: {projects.find(p => p._id === selectedInvoice.projectId)?.projectName || 'Unknown Project'}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Client: {selectedInvoice.clientName}
-                  </Typography>
-                </Box>
-                <Box sx={{ textAlign: 'right' }}>
-                  <Chip
-                    label={selectedInvoice.paymentStatus}
-                    color={getStatusColor(selectedInvoice.paymentStatus) as any}
-                    size="small"
-                  />
-                  <Typography variant="h5" sx={{ mt: 1, color: 'primary.main', fontWeight: 'bold' }}>
-                    ₹{selectedInvoice.amount?.toLocaleString()}
-                  </Typography>
-                </Box>
-              </Box>
-
-              {/* Invoice Details Grid */}
-              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3, mb: 3 }}>
-                <Card variant="outlined">
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <MoneyIcon />
-                      Payment Information
-                    </Typography>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="body2" color="text.secondary">Amount:</Typography>
-                        <Typography variant="body2" fontWeight={500}>₹{selectedInvoice.amount?.toLocaleString()}</Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="body2" color="text.secondary">Invoice Stage:</Typography>
-                        <Typography variant="body2" fontWeight={500}>{selectedInvoice.invoiceStage}</Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="body2" color="text.secondary">Payment Status:</Typography>
-                        <Chip
-                          label={selectedInvoice.paymentStatus}
-                          color={getStatusColor(selectedInvoice.paymentStatus) as any}
-                          size="small"
-                        />
-                      </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="body2" color="text.secondary">Due Date:</Typography>
-                        <Typography variant="body2" fontWeight={500}>
-                          {selectedInvoice.dueDate ? new Date(selectedInvoice.dueDate).toLocaleDateString() : 'Not set'}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </CardContent>
-                </Card>
-
-                <Card variant="outlined">
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <ScheduleIcon />
-                      Timeline Information
-                    </Typography>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="body2" color="text.secondary">Created:</Typography>
-                        <Typography variant="body2" fontWeight={500}>
-                          {selectedInvoice.createdAt ? new Date(selectedInvoice.createdAt).toLocaleDateString() : 'Unknown'}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="body2" color="text.secondary">Last Updated:</Typography>
-                        <Typography variant="body2" fontWeight={500}>
-                          {selectedInvoice.updatedAt ? new Date(selectedInvoice.updatedAt).toLocaleDateString() : 'Unknown'}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="body2" color="text.secondary">Days Overdue:</Typography>
-                        <Typography variant="body2" fontWeight={500} color={selectedInvoice.dueDate && new Date(selectedInvoice.dueDate) < new Date() ? 'error.main' : 'text.primary'}>
-                          {selectedInvoice.dueDate && new Date(selectedInvoice.dueDate) < new Date() 
-                            ? `${Math.ceil((new Date().getTime() - new Date(selectedInvoice.dueDate).getTime()) / (1000 * 60 * 60 * 24))} days` 
-                            : 'On time'}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Box>
-
-              {/* Payment History */}
-              <Card variant="outlined" sx={{ mb: 3 }}>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <CheckCircleIcon />
-                    Payment History
-                  </Typography>
-                  {selectedInvoice.paymentStatus === 'Collected' ? (
-                    <Box sx={{ 
-                      p: 2, 
-                      backgroundColor: '#e8f5e8', 
-                      borderRadius: 1,
-                      border: '1px solid #c8e6c9'
-                    }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                        <CheckCircleIcon sx={{ color: '#4caf50' }} />
-                        <Typography variant="body2" fontWeight={500} sx={{ color: '#2e7d32' }}>
-                          Payment Received
-                        </Typography>
-                      </Box>
-                      <Typography variant="body2" color="text.secondary">
-                        Payment of ₹{selectedInvoice.amount?.toLocaleString()} was received on {selectedInvoice.paymentDate ? new Date(selectedInvoice.paymentDate).toLocaleDateString() : 'Unknown date'}.
-                      </Typography>
-                    </Box>
-                  ) : (
-                    <Box sx={{ 
-                      p: 2, 
-                      backgroundColor: '#fff3e0', 
-                      borderRadius: 1,
-                      border: '1px solid #ffcc02'
-                    }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                        <WarningIcon sx={{ color: '#ff9800' }} />
-                        <Typography variant="body2" fontWeight={500} sx={{ color: '#e65100' }}>
-                          Payment Pending
-                        </Typography>
-                      </Box>
-                      <Typography variant="body2" color="text.secondary">
-                        This invoice is still awaiting payment. 
-                        {selectedInvoice.dueDate && new Date(selectedInvoice.dueDate) < new Date() && 
-                          ` It has been overdue for ${Math.ceil((new Date().getTime() - new Date(selectedInvoice.dueDate).getTime()) / (1000 * 60 * 60 * 24))} days.`}
-                      </Typography>
-                    </Box>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Actions */}
-              <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                {selectedInvoice.paymentStatus !== 'Collected' && (
-                  <Button
-                    variant="outlined"
-                    startIcon={<SendIcon />}
-                    onClick={() => {
-                      setOpenViewDialog(false);
-                      handleSendReminder(selectedInvoice._id);
-                    }}
-                  >
-                    Send Reminder
-                  </Button>
-                )}
-                <Button
-                  variant="outlined"
-                  startIcon={<ReceiptIcon />}
-                  onClick={() => {
-                    // In a real app, this would generate and download the invoice PDF
-                    alert('Invoice PDF would be generated and downloaded');
-                  }}
-                >
-                  Download PDF
-                </Button>
-                <Button
-                  variant="contained"
-                  startIcon={<EditIcon />}
-                  onClick={() => {
-                    setOpenViewDialog(false);
-                    handleEditInvoice(selectedInvoice);
-                  }}
-                >
-                  Edit Invoice
-                </Button>
-              </Box>
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenViewDialog(false)}>Close</Button>
         </DialogActions>
       </Dialog>
 

@@ -1,7 +1,7 @@
 {
-  "name": "crmfloat-server",
+  "name": "design-pipeline-crm-server",
   "version": "1.0.0",
-  "description": "CRMFloat Backend Server",
+  "description": "Design Pipeline CRM Backend Server",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -34,14 +34,11 @@
   },
   "keywords": [
     "crm",
-    "crmfloat",
-    "customer-management",
+    "design",
+    "interior-design",
     "project-management",
-    "api",
-    "backend",
-    "nodejs",
-    "mongodb"
+    "api"
   ],
-  "author": "CRMFloat Team",
-  "license": "Commercial"
+  "author": "Design Pipeline Team",
+  "license": "MIT"
 }

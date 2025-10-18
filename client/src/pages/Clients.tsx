@@ -27,8 +27,6 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   Upload as UploadIcon,
-  CloudUpload as CloudUploadIcon,
-  Download as DownloadIcon,
 } from '@mui/icons-material';
 import { api } from '../services/api';
 
@@ -44,25 +42,6 @@ interface Client {
   createdAt: string;
 }
 
-interface Document {
-  _id: string;
-  documentId: string;
-  name: string;
-  type: string;
-  clientId: string;
-  clientName: string;
-  projectId?: string;
-  projectName: string;
-  size: string;
-  uploadedBy: string;
-  uploadDate: string;
-  access: string;
-  url: string;
-  description: string;
-  tags: string[];
-  isActive: boolean;
-}
-
 const Clients: React.FC = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
@@ -74,7 +53,6 @@ const Clients: React.FC = () => {
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openUploadDialog, setOpenUploadDialog] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [clientDocuments, setClientDocuments] = useState<Document[]>([]);
   const [newClient, setNewClient] = useState({
     name: '',
     email: '',
@@ -99,25 +77,14 @@ const Clients: React.FC = () => {
     }
   };
 
-  const fetchClientDocuments = async (clientId: string) => {
-    try {
-      const response = await api.get(`/documents?clientId=${clientId}`);
-      setClientDocuments(response.data.documents || []);
-    } catch (err: any) {
-      console.error('Failed to fetch client documents:', err);
-      setClientDocuments([]);
-    }
-  };
-
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, client: Client) => {
     setAnchorEl(event.currentTarget);
     setSelectedClient(client);
-    fetchClientDocuments(client._id);
   };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
-    // Don't clear selectedClient here as it's needed for edit/delete operations
+    setSelectedClient(null);
   };
 
   const handleCreateClient = async () => {
@@ -155,18 +122,12 @@ const Clients: React.FC = () => {
       setOpenUploadDialog(false);
       setSelectedFile(null);
       setError(''); // Clear any previous errors
-      
-      // Refresh client documents
-      if (selectedClient) {
-        fetchClientDocuments(selectedClient._id);
-      }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to upload file');
     }
   };
 
   const handleEdit = () => {
-    // selectedClient is already set when menu is opened
     setOpenEditDialog(true);
     handleMenuClose();
   };
@@ -178,7 +139,6 @@ const Clients: React.FC = () => {
       const response = await api.put(`/clients/${selectedClient._id}`, selectedClient);
       setClients(clients.map(c => c._id === selectedClient._id ? response.data.client : c));
       setOpenEditDialog(false);
-      setSelectedClient(null);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to update client');
     }
@@ -269,7 +229,7 @@ const Clients: React.FC = () => {
 
                 <Box sx={{ mt: 2 }}>
                   <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Budget: ₹{client.targetBudget.toLocaleString('en-IN')}
+                    Budget: ₹{client.targetBudget.toLocaleString()}
                   </Typography>
                   
                   <Box sx={{ mb: 1 }}>
@@ -447,13 +407,10 @@ const Clients: React.FC = () => {
               <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
                 <TextField
                   fullWidth
-                  label="Target Budget (₹)"
+                  label="Target Budget"
                   type="number"
                   value={selectedClient?.targetBudget || 0}
                   onChange={(e) => setSelectedClient(prev => prev ? {...prev, targetBudget: Number(e.target.value)} : null)}
-                  InputProps={{
-                    startAdornment: <Typography sx={{ mr: 1 }}>₹</Typography>
-                  }}
                 />
               </Box>
             </Box>
@@ -470,58 +427,10 @@ const Clients: React.FC = () => {
                 <MenuItem value="Other">Other</MenuItem>
               </Select>
             </FormControl>
-            
-            {/* Documents Section */}
-            <Box sx={{ mt: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                Documents ({clientDocuments.length})
-              </Typography>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Button
-                  variant="outlined"
-                  startIcon={<CloudUploadIcon />}
-                  onClick={() => setOpenUploadDialog(true)}
-                >
-                  Upload Document
-                </Button>
-              </Box>
-              
-              {clientDocuments.length > 0 ? (
-                <Box sx={{ maxHeight: 200, overflow: 'auto' }}>
-                  {clientDocuments.map((doc) => (
-                    <Box key={doc._id} sx={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between', 
-                      alignItems: 'center',
-                      p: 1,
-                      border: '1px solid #e0e0e0',
-                      borderRadius: 1,
-                      mb: 1
-                    }}>
-                      <Box>
-                        <Typography variant="body2" fontWeight="medium">
-                          {doc.name}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {doc.size} • {new Date(doc.uploadDate).toLocaleDateString()}
-                        </Typography>
-                      </Box>
-                      <IconButton size="small">
-                        <DownloadIcon />
-                      </IconButton>
-                    </Box>
-                  ))}
-                </Box>
-              ) : (
-                <Typography variant="body2" color="text.secondary">
-                  No documents uploaded yet
-                </Typography>
-              )}
-            </Box>
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => { setOpenEditDialog(false); setSelectedClient(null); }}>Cancel</Button>
+          <Button onClick={() => setOpenEditDialog(false)}>Cancel</Button>
           <Button onClick={handleUpdateClient} variant="contained">
             Update Client
           </Button>

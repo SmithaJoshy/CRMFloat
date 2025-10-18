@@ -300,8 +300,8 @@ const Designers: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
-          Team Management
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
+          Designers Management
         </Typography>
         <Button
           variant="contained"
@@ -309,7 +309,7 @@ const Designers: React.FC = () => {
           onClick={() => setOpenDialog(true)}
           sx={{ borderRadius: 2 }}
         >
-          Add Team Member
+          Add Designer
         </Button>
       </Box>
 
@@ -319,7 +319,7 @@ const Designers: React.FC = () => {
           <Box sx={{ flex: '1 1 300px', minWidth: '200px' }}>
             <TextField
               fullWidth
-              label="Search team members"
+              label="Search designers"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               variant="outlined"
@@ -430,11 +430,11 @@ const Designers: React.FC = () => {
                     Skills:
                   </Typography>
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
-                    {(designer.skills || []).slice(0, 3).map((skill, index) => (
+                    {designer.skills.slice(0, 3).map((skill, index) => (
                       <Chip key={index} label={skill} size="small" variant="outlined" />
                     ))}
-                    {(designer.skills || []).length > 3 && (
-                      <Chip label={`+${(designer.skills || []).length - 3}`} size="small" variant="outlined" />
+                    {designer.skills.length > 3 && (
+                      <Chip label={`+${designer.skills.length - 3}`} size="small" variant="outlined" />
                     )}
                   </Box>
 
@@ -442,11 +442,11 @@ const Designers: React.FC = () => {
                     Specializations:
                   </Typography>
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {(designer.specializations || []).slice(0, 2).map((spec, index) => (
+                    {designer.specializations.slice(0, 2).map((spec, index) => (
                       <Chip key={index} label={spec} size="small" color="primary" variant="outlined" />
                     ))}
-                    {(designer.specializations || []).length > 2 && (
-                      <Chip label={`+${(designer.specializations || []).length - 2}`} size="small" color="primary" variant="outlined" />
+                    {designer.specializations.length > 2 && (
+                      <Chip label={`+${designer.specializations.length - 2}`} size="small" color="primary" variant="outlined" />
                     )}
                   </Box>
                 </Box>

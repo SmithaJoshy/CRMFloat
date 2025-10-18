@@ -20,13 +20,6 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  FormControl,
-  InputLabel,
-  Select,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -37,7 +30,6 @@ import {
   CloudUpload as UploadIcon,
 } from '@mui/icons-material';
 import { api } from '../services/api';
-import { ClientDropdown, ProjectDropdown } from '../components/DataDropdowns';
 
 interface Document {
   _id: string;
@@ -68,15 +60,6 @@ const Documents: React.FC = () => {
   const [typeFilter, setTypeFilter] = useState('all');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
-  const [openCreateDialog, setOpenCreateDialog] = useState(false);
-  const [newDocument, setNewDocument] = useState({
-    name: '',
-    clientId: '',
-    projectId: '',
-    description: '',
-    tags: '',
-    access: 'Team'
-  });
 
   useEffect(() => {
     fetchDocuments();
@@ -120,32 +103,6 @@ const Documents: React.FC = () => {
       setError(err.response?.data?.message || 'Failed to delete document');
     } finally {
       handleMenuClose();
-    }
-  };
-
-  const handleCreateDocument = async () => {
-    try {
-      const formData = new FormData();
-      formData.append('name', newDocument.name);
-      formData.append('clientId', newDocument.clientId);
-      formData.append('projectId', newDocument.projectId);
-      formData.append('description', newDocument.description);
-      formData.append('tags', newDocument.tags);
-      formData.append('access', newDocument.access);
-      
-      await api.post('/documents', formData);
-      setOpenCreateDialog(false);
-      setNewDocument({
-        name: '',
-        clientId: '',
-        projectId: '',
-        description: '',
-        tags: '',
-        access: 'Team'
-      });
-      await fetchDocuments();
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to create document');
     }
   };
 
@@ -195,7 +152,7 @@ const Documents: React.FC = () => {
         <Button
           variant="contained"
           startIcon={<AddIcon />}
-          onClick={() => setOpenCreateDialog(true)}
+          onClick={() => {/* Navigate to upload document */}}
         >
           Upload Document
         </Button>
@@ -322,72 +279,6 @@ const Documents: React.FC = () => {
           Delete
         </MenuItem>
       </Menu>
-
-      {/* Create Document Dialog */}
-      <Dialog open={openCreateDialog} onClose={() => setOpenCreateDialog(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Upload New Document</DialogTitle>
-        <DialogContent>
-          <Box sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <TextField
-              fullWidth
-              label="Document Name"
-              value={newDocument.name}
-              onChange={(e) => setNewDocument({...newDocument, name: e.target.value})}
-              required
-            />
-            
-            <ClientDropdown
-              value={newDocument.clientId}
-              onChange={(value) => setNewDocument({...newDocument, clientId: value, projectId: ''})}
-              label="Client"
-              required
-            />
-            
-            <ProjectDropdown
-              value={newDocument.projectId}
-              onChange={(value) => setNewDocument({...newDocument, projectId: value})}
-              label="Project"
-              clientId={newDocument.clientId}
-            />
-            
-            <TextField
-              fullWidth
-              label="Description"
-              multiline
-              rows={3}
-              value={newDocument.description}
-              onChange={(e) => setNewDocument({...newDocument, description: e.target.value})}
-            />
-            
-            <TextField
-              fullWidth
-              label="Tags (comma separated)"
-              value={newDocument.tags}
-              onChange={(e) => setNewDocument({...newDocument, tags: e.target.value})}
-              placeholder="design, contract, estimate"
-            />
-            
-            <FormControl fullWidth>
-              <InputLabel>Access Level</InputLabel>
-              <Select
-                value={newDocument.access}
-                onChange={(e) => setNewDocument({...newDocument, access: e.target.value})}
-                label="Access Level"
-              >
-                <MenuItem value="Team">Team</MenuItem>
-                <MenuItem value="Client">Client</MenuItem>
-                <MenuItem value="Private">Private</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenCreateDialog(false)}>Cancel</Button>
-          <Button onClick={handleCreateDocument} variant="contained">
-            Upload Document
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 };

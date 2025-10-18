@@ -37,7 +37,6 @@ import {
   CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
 import { api } from '../services/api';
-import { ClientDropdown, ProjectDropdown } from '../components/DataDropdowns';
 
 interface Payment {
   _id: string;
@@ -72,9 +71,7 @@ const Payments: React.FC = () => {
     amount: '',
     paymentMethod: '',
     paymentDate: '',
-    notes: '',
-    clientId: '',
-    projectId: ''
+    notes: ''
   });
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -110,9 +107,7 @@ const Payments: React.FC = () => {
       amount: '',
       paymentMethod: '',
       paymentDate: '',
-      notes: '',
-      clientId: '',
-      projectId: ''
+      notes: ''
     });
     setOpenCreateDialog(true);
   };
@@ -315,29 +310,12 @@ const Payments: React.FC = () => {
               onChange={(e) => setNewPayment({ ...newPayment, invoiceNumber: e.target.value })}
             />
             
-            <ClientDropdown
-              value={newPayment.clientId}
-              onChange={(value) => setNewPayment({...newPayment, clientId: value, projectId: ''})}
-              label="Client"
-              required
-            />
-            
-            <ProjectDropdown
-              value={newPayment.projectId}
-              onChange={(value) => setNewPayment({...newPayment, projectId: value})}
-              label="Project"
-              clientId={newPayment.clientId}
-            />
-            
             <TextField
               fullWidth
-              label="Amount (₹)"
+              label="Amount"
               type="number"
               value={newPayment.amount}
               onChange={(e) => setNewPayment({ ...newPayment, amount: e.target.value })}
-              InputProps={{
-                startAdornment: <Typography sx={{ mr: 1 }}>₹</Typography>
-              }}
             />
             
             <FormControl fullWidth>

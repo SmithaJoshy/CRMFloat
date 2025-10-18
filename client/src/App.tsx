@@ -8,16 +8,8 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Pipeline from './pages/Pipeline';
 import Clients from './pages/Clients';
-import Leads from './pages/Leads-v2';
-import BeyondCare from './pages/BeyondCare';
-import Invoices from './pages/Invoices';
-import Workflow from './pages/Workflow';
-import ProjectDetails from './pages/ProjectDetails';
-import ProjectEdit from './pages/ProjectEdit';
-import Kanban from './pages/Kanban';
 import Payments from './pages/Payments';
 import Documents from './pages/Documents';
-import Designers from './pages/Designers';
 import Layout from './components/Layout';
 
 const theme = createTheme({
@@ -73,21 +65,10 @@ function App() {
             >
               <Route index element={<Navigate to="/dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} />
-              <Route path="leads" element={<Leads />} />
               <Route path="pipeline" element={<Pipeline />} />
               <Route path="clients" element={<Clients />} />
-              <Route path="clients/:id" element={<Clients />} />
-              <Route path="warranty" element={<BeyondCare />} />
-              <Route path="customer-success" element={<BeyondCare />} />
-              <Route path="workflow" element={<Workflow />} />
-              <Route path="kanban" element={<Kanban />} />
-              <Route path="team" element={<Designers />} />
-              <Route path="designers" element={<Designers />} />
-              <Route path="project/:id" element={<ProjectDetails />} />
-              <Route path="project-edit/:id" element={<ProjectEdit />} />
               <Route path="payments" element={<Payments />} />
               <Route path="documents" element={<Documents />} />
-              <Route path="invoices" element={<Invoices />} />
             </Route>
           </Routes>
         </Router>

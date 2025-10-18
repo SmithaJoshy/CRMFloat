@@ -21,8 +21,6 @@ import {
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { api } from '../services/api';
-import { ClientDropdown } from '../components/DataDropdowns';
-import DesignerDropdown from '../components/DesignerDropdown';
 
 interface Deal {
   _id: string;
@@ -67,12 +65,19 @@ interface Deal {
 }
 
 const stages = [
-  'Lead',
-  'Qualified',
-  'Proposal',
-  'Negotiation',
-  'Closed Won',
-  'Closed Lost'
+  'Lead Generation',
+  'Initial Engagement',
+  'Scheduling Visit',
+  'Consultation & Data Capture',
+  'Design in Progress',
+  'Design Presentation & Fee Due',
+  'Costing Shared',
+  'Contract Signed (50% Due)',
+  'Site Measurement Visit',
+  'Detailed Drawings & Vendor Coordination',
+  'Production (40% Interim Due)',
+  'Project Closure (Final 10% Payment)',
+  'Project Completed',
 ];
 
 const Pipeline: React.FC = () => {
@@ -157,9 +162,7 @@ const Pipeline: React.FC = () => {
         priorityLevel: 'Medium'
       });
     } catch (err: any) {
-      const errorMessage = err.response?.data?.message || 'Failed to create project';
-      setError(errorMessage);
-      console.error('❌ Error creating project:', err);
+      setError(err.response?.data?.message || 'Failed to create project');
     }
   };
 
@@ -345,12 +348,19 @@ const Pipeline: React.FC = () => {
               />
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                 <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
-                  <ClientDropdown
-                    value={newProject.clientId}
-                    onChange={(value) => setNewProject({...newProject, clientId: value})}
-                    label="Client"
-                    required
-                  />
+                  <FormControl fullWidth>
+                    <InputLabel>Client</InputLabel>
+                    <Select
+                      value={newProject.clientId}
+                      onChange={(e) => setNewProject({...newProject, clientId: e.target.value})}
+                    >
+                      {clients.map((client) => (
+                        <MenuItem key={client._id} value={client._id}>
+                          {client.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </Box>
                 <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
                   <TextField
@@ -364,11 +374,11 @@ const Pipeline: React.FC = () => {
               </Box>
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                 <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
-                  <DesignerDropdown
-                    value={newProject.assignedDesigner}
-                    onChange={(value) => setNewProject({...newProject, assignedDesigner: value})}
+                  <TextField
+                    fullWidth
                     label="Assigned Designer"
-                    filterByAvailability="Available"
+                    value={newProject.assignedDesigner}
+                    onChange={(e) => setNewProject({...newProject, assignedDesigner: e.target.value})}
                   />
                 </Box>
                 <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>

@@ -221,65 +221,13 @@ const Leads: React.FC = () => {
       
       const clientResponse = await api.post('/clients', clientData);
       
-      // Create a deal/project for the converted lead
-      const dealData = {
-        projectName: `${lead.projectType} Project - ${lead.name}`,
-        clientId: clientResponse.data.client._id,
-        clientName: lead.name,
-        currentStage: 'Lead Qualification',
-        projectStatus: 'Active',
-        totalProjectValue: lead.budget,
-        projectStartDate: new Date().toISOString(),
-        expectedCompletionDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(), // 90 days from now
-        assignedTeam: {
-          assignedDesigner: 'TBD',
-          assignedPM: 'TBD',
-          assignedSales: 'TBD'
-        },
-        propertyType: {
-          dealType: lead.projectType,
-          propertyType: lead.projectType
-        },
-        size: {
-          displayText: 'TBD'
-        },
-        location: {
-          city: 'TBD',
-          state: 'TBD'
-        },
-        designStatus: {
-          design3DStatus: 'Not Started',
-          design3DProgress: 0,
-          moodBoardShared: false
-        },
-        activities: {
-          tasks: [],
-          milestones: [],
-          communications: []
-        },
-        budgetBreakdown: {
-          designFees: 0,
-          materials: 0,
-          labor: 0,
-          miscellaneous: 0
-        },
-        timeline: {
-          phases: []
-        },
-        riskAssessment: {
-          risks: []
-        }
-      };
-      
-      const dealResponse = await api.post('/deals', dealData);
-      
       // Update lead status to converted
       await api.put(`/leads/${lead._id}`, { leadStatus: 'Converted' });
       
       setLeads(leads.map(l => l._id === lead._id ? { ...l, leadStatus: 'Converted' } : l));
       setAnchorEl(null);
       
-      alert(`Lead converted successfully! Client ID: ${clientResponse.data.client.clientId}, Deal ID: ${dealResponse.data.deal.dealId}`);
+      alert(`Lead converted to client! Client ID: ${clientResponse.data.client.clientId}`);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to convert lead');
     }

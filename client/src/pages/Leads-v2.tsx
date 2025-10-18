@@ -107,15 +107,11 @@ const Leads: React.FC = () => {
     'New Lead',
     'Contacted',
     'Qualified',
-    'Hot Lead',
     'Proposal Sent',
     'Negotiating',
-    'Follow-up Required',
     'Converted',
     'Lost',
-    'Nurturing',
-    'On Hold',
-    'Re-engaged'
+    'Nurturing'
   ];
 
   const leadSources = [

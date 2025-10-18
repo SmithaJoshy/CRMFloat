@@ -91,17 +91,6 @@ router.post('/', auth, authorize('Founder/Executive', 'Sales Manager'), async (r
   try {
     const dealData = req.body;
     
-    // Check for duplicate project name
-    const existingDeal = await Deal.findOne({ 
-      projectName: dealData.projectName,
-      isActive: true 
-    });
-    if (existingDeal) {
-      return res.status(400).json({ 
-        message: 'A project with this name already exists. Please choose a different name.' 
-      });
-    }
-    
     // Verify client exists
     const client = await Client.findById(dealData.clientId);
     if (!client) {

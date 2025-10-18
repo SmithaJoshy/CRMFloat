@@ -73,20 +73,9 @@ router.post('/', auth, authorize('Founder/Executive', 'Sales Manager'), async (r
     const clientData = req.body;
     
     // Check if client with email already exists
-    const existingClientByEmail = await Client.findOne({ email: clientData.email });
-    if (existingClientByEmail) {
+    const existingClient = await Client.findOne({ email: clientData.email });
+    if (existingClient) {
       return res.status(400).json({ message: 'Client with this email already exists' });
-    }
-    
-    // Check if client with name already exists
-    const existingClientByName = await Client.findOne({ 
-      name: clientData.name,
-      isActive: true 
-    });
-    if (existingClientByName) {
-      return res.status(400).json({ 
-        message: 'A client with this name already exists. Please choose a different name.' 
-      });
     }
 
     const client = new Client(clientData);

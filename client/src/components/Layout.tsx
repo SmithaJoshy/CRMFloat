@@ -6,6 +6,9 @@ import {
   CssBaseline,
   Drawer,
   IconButton,
+  List,
+  ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Toolbar,
@@ -20,36 +23,22 @@ import {
   Dashboard as DashboardIcon,
   AccountTree as PipelineIcon,
   People as PeopleIcon,
-  TrendingUp as LeadsIcon,
-  Star as BeyondCareIcon,
-  Timeline as WorkflowIcon,
-  ViewKanban as KanbanIcon,
   Payment as PaymentIcon,
-  Receipt as InvoiceIcon,
   Description as DocumentIcon,
   AccountCircle as AccountIcon,
   Logout as LogoutIcon,
   ChevronLeft as ChevronLeftIcon,
-  Palette as DesignersIcon,
-  Group as TeamIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
-import GroupedNavigation from './GroupedNavigation';
 
 const drawerWidth = 240;
 
 const menuItems = [
-  { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard', category: 'main' },
-  { text: 'Leads', icon: <LeadsIcon />, path: '/leads', category: 'sales' },
-  { text: 'Pipeline', icon: <PipelineIcon />, path: '/pipeline', category: 'sales' },
-  { text: 'Kanban', icon: <KanbanIcon />, path: '/kanban', category: 'project' },
-  { text: 'Workflow', icon: <WorkflowIcon />, path: '/workflow', category: 'project' },
-  { text: 'Team', icon: <TeamIcon />, path: '/team', category: 'project' },
-  { text: 'Clients', icon: <PeopleIcon />, path: '/clients', category: 'customer' },
-  { text: 'Customer Success', icon: <BeyondCareIcon />, path: '/customer-success', category: 'customer' },
-  { text: 'Invoices', icon: <InvoiceIcon />, path: '/invoices', category: 'finance' },
-  { text: 'Payments', icon: <PaymentIcon />, path: '/payments', category: 'finance' },
-  { text: 'Documents', icon: <DocumentIcon />, path: '/documents', category: 'tools' },
+  { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
+  { text: 'Pipeline', icon: <PipelineIcon />, path: '/pipeline' },
+  { text: 'Clients', icon: <PeopleIcon />, path: '/clients' },
+  { text: 'Payments', icon: <PaymentIcon />, path: '/payments' },
+  { text: 'Documents', icon: <DocumentIcon />, path: '/documents' },
 ];
 
 export default function Layout() {
@@ -84,57 +73,27 @@ export default function Layout() {
   const drawer = (
     <Box>
       <Toolbar>
-          <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-            {/* CRMFloat Logo */}
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography variant="h6" sx={{ 
-                  fontWeight: 'bold', 
-                  color: '#000',
-                  fontSize: '1.4rem',
-                  lineHeight: 1,
-                  fontFamily: 'sans-serif'
-                }}>
-                  CRMFl
-                </Typography>
-                <Box sx={{ 
-                  width: 16, 
-                  height: 16, 
-                  backgroundColor: '#4CAF50', 
-                  borderRadius: '50%',
-                  mx: 0.3
-                }} />
-                <Typography variant="h6" sx={{ 
-                  fontWeight: 'bold', 
-                  color: '#000',
-                  fontSize: '1.4rem',
-                  lineHeight: 1,
-                  fontFamily: 'sans-serif'
-                }}>
-                  at
-                </Typography>
-              </Box>
-              <Typography variant="caption" sx={{ 
-                color: '#666',
-                fontSize: '0.65rem',
-                fontWeight: 500,
-                letterSpacing: '0.5px',
-                mt: 0.1
-              }}>
-                SIMPLE CRM FOR STARTUPS
-              </Typography>
-            </Box>
-          </Box>
+        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+          Design Pipeline CRM
+        </Typography>
         <IconButton onClick={handleDrawerToggle}>
           <ChevronLeftIcon />
         </IconButton>
       </Toolbar>
       <Divider />
-      <GroupedNavigation 
-        menuItems={menuItems}
-        currentPath={location.pathname}
-        onNavigate={(path) => handleNavigation(path)}
-      />
+      <List>
+        {menuItems.map((item) => (
+          <ListItem key={item.text} disablePadding>
+            <ListItemButton
+              selected={location.pathname === item.path}
+              onClick={() => handleNavigation(item.path)}
+            >
+              <ListItemIcon>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.text} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
     </Box>
   );
 
@@ -158,47 +117,9 @@ export default function Layout() {
           >
             <MenuIcon />
           </IconButton>
-          <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-            {/* CRMFloat Logo */}
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography variant="h6" sx={{ 
-                  fontWeight: 'bold', 
-                  color: '#fff',
-                  fontSize: '1.5rem',
-                  lineHeight: 1,
-                  fontFamily: 'sans-serif'
-                }}>
-                  CRMFl
-                </Typography>
-                <Box sx={{ 
-                  width: 18, 
-                  height: 18, 
-                  backgroundColor: '#4CAF50', 
-                  borderRadius: '50%',
-                  mx: 0.4
-                }} />
-                <Typography variant="h6" sx={{ 
-                  fontWeight: 'bold', 
-                  color: '#fff',
-                  fontSize: '1.5rem',
-                  lineHeight: 1,
-                  fontFamily: 'sans-serif'
-                }}>
-                  at
-                </Typography>
-              </Box>
-              <Typography variant="caption" sx={{ 
-                color: '#e0e0e0',
-                fontSize: '0.7rem',
-                fontWeight: 500,
-                letterSpacing: '0.5px',
-                mt: 0.1
-              }}>
-                SIMPLE CRM FOR STARTUPS
-              </Typography>
-            </Box>
-          </Box>
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+            Design Pipeline CRM
+          </Typography>
           <IconButton
             size="large"
             aria-label="account of current user"

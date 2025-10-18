@@ -22,19 +22,19 @@ const seedUsers = async () => {
   const users = [
     {
       name: 'Admin User',
-      email: 'admin@crmfloat.com',
+      email: 'admin@designpipeline.com',
       password: 'admin123',
       role: 'admin'
     },
     {
       name: 'Manager User',
-      email: 'manager@crmfloat.com',
+      email: 'manager@designpipeline.com',
       password: 'manager123',
       role: 'manager'
     },
     {
       name: 'Sales User',
-      email: 'sales@crmfloat.com',
+      email: 'sales@designpipeline.com',
       password: 'sales123',
       role: 'sales'
     }
@@ -58,7 +58,7 @@ const seedDesigners = async () => {
   const designers = [
     {
       name: 'Sarah Johnson',
-      email: 'sarah@crmfloat.com',
+      email: 'sarah@designpipeline.com',
       phone: '+91-9876543211',
       role: 'Senior Interior Designer',
       department: 'Design',
@@ -72,7 +72,7 @@ const seedDesigners = async () => {
     },
     {
       name: 'Michael Chen',
-      email: 'michael@crmfloat.com',
+      email: 'michael@designpipeline.com',
       phone: '+91-9876543212',
       role: 'Junior Interior Designer',
       department: 'Design',
@@ -86,7 +86,7 @@ const seedDesigners = async () => {
     },
     {
       name: 'Priya Sharma',
-      email: 'priya@crmfloat.com',
+      email: 'priya@designpipeline.com',
       phone: '+91-9876543213',
       role: 'Design Lead',
       department: 'Design',

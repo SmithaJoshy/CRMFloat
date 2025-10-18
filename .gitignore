@@ -187,9 +187,6 @@ implementation/airtable-setup/airtable-config.json
 implementation/automation-workflows/make-scenarios.json
 implementation/mobile-app-config/glide-config.json
 
-# React build (exclude from git, but include in deployment)
-client/build/
-
 # Keep example files
 !implementation/airtable-setup/airtable-config.example.json
 !implementation/automation-workflows/make-scenarios.example.json

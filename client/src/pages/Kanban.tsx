@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Card,
   CardContent,
   Typography,
   Chip,
+  LinearProgress,
   IconButton,
   Tooltip,
+  Badge,
+  Paper,
+  Divider,
   Button,
   Dialog,
   DialogTitle,
@@ -19,9 +22,7 @@ import {
   Select,
   MenuItem,
   Alert,
-  Snackbar,
-  Avatar,
-  AvatarGroup
+  Snackbar
 } from '@mui/material';
 import {
   DragIndicator as DragIcon,
@@ -33,9 +34,7 @@ import {
   Edit as EditIcon,
   Visibility as ViewIcon,
   Add as AddIcon,
-  Close as CloseIcon,
-  MoreHoriz as MoreIcon,
-  AttachMoney as MoneyIcon
+  Close as CloseIcon
 } from '@mui/icons-material';
 import {
   DndContext,
@@ -48,115 +47,286 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  useDroppable,
 } from '@dnd-kit/core';
 import {
+  arrayMove,
   SortableContext,
-  useSortable,
+  sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
+import {
+  useSortable,
+} from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import api from '../services/api';
-import { ClientDropdown } from '../components/DataDropdowns';
-import DesignerDropdown from '../components/DesignerDropdown';
-
-interface ProjectNote {
-  id: string;
-  content: string;
-  addedBy: string;
-  addedAt: string;
-  type: string;
-}
+import { api } from '../services/api';
 
 interface Project {
   _id: string;
+  dealId: string;
   projectName: string;
   clientName: string;
-  clientId: string;
-  totalProjectValue: number;
   currentStage: string;
   projectStatus: string;
-  assignedDesigner?: string;
-  assignedProjectManager?: string;
-  assignedSales?: string;
-  propertyType?: {
-    propertyType: string;
-    dealType?: string;
+  totalProjectValue: number;
+  projectStartDate: string;
+  expectedCompletionDate: string;
+  assignedTeam: {
+    assignedDesigner: string;
+    assignedPM: string;
+    assignedSales: string;
   };
-  size?: {
+  propertyType: {
+    dealType: string;
+    propertyType: string;
+  };
+  size: {
     displayText: string;
   };
-  location?: {
+  location: {
     city: string;
     state: string;
   };
-  progress?: number;
-  priorityLevel?: string;
-  createdAt: string;
-  notes?: string;
-  notesHistory?: ProjectNote[];
-  updatedAt: string;
+  designStatus: {
+    design3DStatus: string;
+    design3DProgress: number;
+    moodBoardShared: boolean;
+  };
+  activities: {
+    tasks: Array<{
+      id: string;
+      title: string;
+      status: string;
+      priority: string;
+      assignedTo: string;
+    }>;
+  };
 }
 
 interface KanbanColumn {
   id: string;
   title: string;
+  color: string;
   projects: Project[];
 }
 
+interface ProjectHealth {
+  projectId: string;
+  healthStatus: 'green' | 'yellow' | 'red';
+  overdueInvoices: number;
+  pendingAmount: number;
+  totalOverdue: number;
+}
+
 const Kanban: React.FC = () => {
-  const navigate = useNavigate();
-  const [columns, setColumns] = useState<KanbanColumn[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [projectHealth, setProjectHealth] = useState<ProjectHealth[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [activeProject, setActiveProject] = useState<Project | null>(null);
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' | 'warning' | 'info' });
-  const [openCreateDialog, setOpenCreateDialog] = useState(false);
-  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [openDialog, setOpenDialog] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [editingProject, setEditingProject] = useState<Project | null>(null);
-  const [viewingProject, setViewingProject] = useState<Project | null>(null);
-  const [openViewDialog, setOpenViewDialog] = useState(false);
-  const [clients, setClients] = useState<any[]>([]);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [openNewProjectDialog, setOpenNewProjectDialog] = useState(false);
   const [newProject, setNewProject] = useState({
     projectName: '',
-    clientId: '',
+    clientName: '',
+    clientEmail: '',
+    clientPhone: '',
     totalProjectValue: 0,
-    assignedDesigner: '',
-    priorityLevel: 'Medium'
+    propertyType: '',
+    size: '',
+    location: '',
+    currentStage: 'Lead Generation'
   });
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 10,
-      },
-    }),
-    useSensor(KeyboardSensor)
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
   );
 
   const stages = [
-    'ToDo',
-    'In Progress',
-    'Blocked',
-    'Paused',
-    'Done',
-    'Canceled'
+    { id: 'Lead Generation', title: 'Lead Generation', color: '#e3f2fd' },
+    { id: 'Initial Engagement', title: 'Initial Engagement', color: '#f3e5f5' },
+    { id: 'Scheduling Visit', title: 'Scheduling Visit', color: '#fff8e1' },
+    { id: 'Consultation & Data Capture', title: 'Consultation & Data Capture', color: '#fff3e0' },
+    { id: 'Design in Progress', title: 'Design in Progress', color: '#f1f8e9' },
+    { id: 'Design Presentation & Fee Due', title: 'Design Presentation & Fee Due', color: '#e8f5e8' },
+    { id: 'Costing Shared', title: 'Costing Shared', color: '#fce4ec' },
+    { id: 'Contract Signed (50% Due)', title: 'Contract Signed (50% Due)', color: '#e0f2f1' },
+    { id: 'Site Measurement Visit', title: 'Site Measurement Visit', color: '#f3e5f5' },
+    { id: 'Detailed Drawings & Vendor Coordination', title: 'Detailed Drawings & Vendor Coordination', color: '#fffde7' },
+    { id: 'Production (40% Interim Due)', title: 'Production (40% Interim Due)', color: '#e8eaf6' },
+    { id: 'Project Closure (Final 10% Payment)', title: 'Project Closure (Final 10% Payment)', color: '#f1f8e9' },
+    { id: 'Project Completed', title: 'Project Completed', color: '#e8f5e8' }
   ];
+
+  // Sortable Project Card Component
+  interface SortableProjectCardProps {
+    project: Project;
+    onCardClick: (project: Project) => void;
+    healthData?: ProjectHealth;
+  }
+
+  const SortableProjectCard: React.FC<SortableProjectCardProps> = ({ project, onCardClick, healthData }) => {
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+      isDragging,
+    } = useSortable({ id: project._id });
+
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+      opacity: isDragging ? 0.5 : 1,
+    };
+
+    const getPropertyIcon = (propertyType: string) => {
+      if (propertyType?.includes('Apartment') || propertyType?.includes('Villa') || propertyType?.includes('House')) {
+        return <HomeIcon fontSize="small" />;
+      }
+      if (propertyType?.includes('Office')) {
+        return <BusinessIcon fontSize="small" />;
+      }
+      if (propertyType?.includes('Restaurant')) {
+        return <RestaurantIcon fontSize="small" />;
+      }
+      if (propertyType?.includes('Healthcare')) {
+        return <HospitalIcon fontSize="small" />;
+      }
+      return <BusinessIcon fontSize="small" />;
+    };
+
+    const formatCurrency = (value: number) => {
+      return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 0,
+      }).format(value);
+    };
+
+    return (
+      <Card
+        ref={setNodeRef}
+        style={style}
+        sx={{
+          mb: 2,
+          cursor: 'pointer',
+          '&:hover': { boxShadow: 3 },
+          transition: 'box-shadow 0.2s',
+          borderLeft: `5px solid ${project.projectStatus === 'Active' ? '#4caf50' : '#9e9e9e'}`,
+        }}
+        onClick={() => onCardClick(project)}
+      >
+        <CardContent>
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+            <Box display="flex" alignItems="center" gap={1}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                {project.projectName}
+              </Typography>
+              {healthData && (
+                <Tooltip title={`Health: ${healthData.healthStatus.toUpperCase()}. ${healthData.overdueInvoices} overdue invoices. ₹${healthData.totalOverdue.toLocaleString()} overdue`}>
+                  <Box
+                    sx={{
+                      width: 12,
+                      height: 12,
+                      borderRadius: '50%',
+                      backgroundColor: 
+                        healthData.healthStatus === 'green' ? '#4caf50' :
+                        healthData.healthStatus === 'yellow' ? '#ff9800' : '#f44336',
+                      border: '2px solid white',
+                      boxShadow: '0 0 0 1px rgba(0,0,0,0.1)'
+                    }}
+                  />
+                </Tooltip>
+              )}
+            </Box>
+            <Tooltip title="Drag to move between stages">
+              <IconButton
+                {...attributes}
+                {...listeners}
+                size="small"
+                sx={{ 
+                  cursor: 'grab',
+                  '&:active': { cursor: 'grabbing' }
+                }}
+              >
+                <DragIcon sx={{ color: 'text.disabled' }} />
+              </IconButton>
+            </Tooltip>
+          </Box>
+          
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+            Client: {project.clientName}
+          </Typography>
+          
+          <Box display="flex" alignItems="center" mb={0.5}>
+            {getPropertyIcon(project.propertyType?.propertyType || '')}
+            <Typography variant="body2" color="text.secondary" ml={0.5}>
+              {project.propertyType?.propertyType || 'Property type not specified'}
+            </Typography>
+          </Box>
+          
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            {project.size?.displayText || 'Size not specified'} • {project.location?.city || 'Location TBD'}, {project.location?.state || 'State TBD'}
+          </Typography>
+          
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+            <Typography variant="h6" color="primary.main">
+              {formatCurrency(project.totalProjectValue || 0)}
+            </Typography>
+            <Chip
+              label={project.projectStatus || 'Unknown'}
+              size="small"
+              color={project.projectStatus === 'Active' ? 'success' : 'default'}
+            />
+          </Box>
+          
+          <Box display="flex" alignItems="center" mb={1}>
+            <PersonIcon fontSize="small" color="action" />
+            <Typography variant="body2" sx={{ ml: 1 }}>
+              {project.assignedTeam?.assignedDesigner || 'Not assigned'}
+            </Typography>
+          </Box>
+          
+          {project.designStatus && (
+            <Box sx={{ mb: 1 }}>
+              <Typography variant="body2" color="text.secondary">
+                3D Design: {project.designStatus.design3DStatus} ({project.designStatus.design3DProgress}%)
+              </Typography>
+              <LinearProgress
+                variant="determinate"
+                value={project.designStatus.design3DProgress}
+                sx={{ mt: 0.5, height: 4, borderRadius: 2 }}
+              />
+            </Box>
+          )}
+          
+          {project.activities?.tasks && project.activities.tasks.length > 0 && (
+            <Typography variant="body2" color="text.secondary">
+              Tasks: {project.activities.tasks.filter(t => t.status === 'Completed').length}/{project.activities.tasks.length} completed
+            </Typography>
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
 
   useEffect(() => {
     fetchProjects();
-    fetchClients();
   }, []);
 
   const fetchProjects = async () => {
     try {
+      setLoading(true);
       const response = await api.get('/deals');
-      const projects = response.data.deals || [];
-      console.log('📊 Fetched projects:', projects.map((p: any) => ({ id: p._id, name: p.projectName, stage: p.currentStage })));
-      setProjects(projects);
-      updateColumns(projects);
+      setProjects(response.data.deals || []);
+      await fetchProjectHealth();
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to fetch projects');
     } finally {
@@ -164,241 +334,276 @@ const Kanban: React.FC = () => {
     }
   };
 
-  const fetchClients = async () => {
+  const fetchProjectHealth = async () => {
     try {
-      const response = await api.get('/clients');
-      setClients(response.data.clients || []);
+      const response = await api.get('/invoices');
+      const invoices = response.data.invoices || [];
+      
+      const healthData: ProjectHealth[] = projects.map(project => {
+        const projectInvoices = invoices.filter((inv: any) => inv.projectId === project._id);
+        const overdueInvoices = projectInvoices.filter((inv: any) => 
+          inv.paymentStatus === 'Overdue' || 
+          (inv.paymentStatus === 'Sent' && new Date(inv.dueDate) < new Date())
+        );
+        const pendingAmount = projectInvoices
+          .filter((inv: any) => inv.paymentStatus === 'Sent')
+          .reduce((sum: number, inv: any) => sum + inv.amount, 0);
+        const totalOverdue = overdueInvoices.reduce((sum: number, inv: any) => sum + inv.amount, 0);
+
+        let healthStatus: 'green' | 'yellow' | 'red' = 'green';
+        if (overdueInvoices.length > 0) {
+          healthStatus = 'red';
+        } else if (pendingAmount > 0) {
+          healthStatus = 'yellow';
+        }
+
+        return {
+          projectId: project._id,
+          healthStatus,
+          overdueInvoices: overdueInvoices.length,
+          pendingAmount,
+          totalOverdue
+        };
+      });
+
+      setProjectHealth(healthData);
     } catch (err: any) {
-      console.error('Failed to fetch clients:', err);
+      console.error('Failed to fetch project health:', err);
     }
   };
 
-  const updateColumns = (projectsData: Project[]) => {
-    console.log('🔧 Updating columns with projects:', projectsData.length);
-    console.log('🔧 Available stages:', stages);
-    console.log('🔧 Project stages:', projectsData.map(p => ({ id: p._id, name: p.projectName, stage: p.currentStage })));
-    
-    const columnsData = stages.map(stage => {
-      const stageProjects = projectsData.filter(project => project.currentStage === stage);
-      console.log(`🔧 Stage "${stage}": ${stageProjects.length} projects`, stageProjects.map(p => p.projectName));
-        return {
-        id: stage,
-        title: stage,
-        projects: stageProjects
-        };
-      });
-    console.log('🏗️ Final columns data:', columnsData.map(c => ({ stage: c.id, count: c.projects.length, projects: c.projects.map(p => p.projectName) })));
-    setColumns(columnsData);
+  const updateProjectStage = async (projectId: string, newStage: string) => {
+    try {
+      await api.put(`/deals/${projectId}/stage`, { stage: newStage });
+      setSnackbarMessage('Project stage updated successfully!');
+      setSnackbarOpen(true);
+    } catch (err) {
+      setSnackbarMessage('Failed to update project stage');
+      setSnackbarOpen(true);
+      console.error('Error updating project stage:', err);
+    }
   };
 
   const handleDragStart = (event: DragStartEvent) => {
-    const { active } = event;
-    console.log('🚀 Drag started:', { activeId: active.id, activeData: active.data.current });
-    const project = projects.find(p => p._id === active.id);
-    setActiveProject(project || null);
+    setActiveId(event.active.id as string);
   };
 
-  const handleDragEnd = async (event: DragEndEvent) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    console.log('🏁 Drag ended:', { activeId: active.id, overId: over?.id, overData: over?.data.current });
-    setActiveProject(null);
     
     if (!over) {
-      console.log('❌ No drop target found');
+      setActiveId(null);
       return;
     }
 
     const projectId = active.id as string;
-    let newStage = over.id as string;
-
-    console.log('🎯 Drag end:', { projectId, newStage, overId: over.id, overData: over.data.current });
-
-    // Determine the target stage based on drop target type
-    if (over.data.current?.type === 'column') {
-      // Dropping directly on a column
-      newStage = over.data.current.stage;
-      console.log('🎯 Dropping on column, stage:', newStage);
-    } else if (over.data.current?.type === 'project') {
-      // Dropping on another project - use that project's stage
-      newStage = over.data.current.project.currentStage;
-      console.log('🎯 Dropping on project, using stage:', newStage);
-    } else {
-      // Fallback: try to use over.id directly
-      console.log('🎯 Fallback: using over.id as stage:', over.id);
-      newStage = String(over.id);
-    }
-
-    // Validate that we have a valid stage
-    if (!stages.includes(newStage)) {
-      console.error('❌ Invalid stage:', newStage, 'Available stages:', stages);
-      setError('Invalid drop target');
+    const newStageId = over.id as string;
+    
+    // Check if we're dropping on the same stage or a different stage
+    const project = projects.find(p => p._id === projectId);
+    if (!project) {
+      setActiveId(null);
       return;
     }
 
-    console.log('✅ Final stage for project:', projectId, '->', newStage);
-
-    try {
-      const response = await api.put(`/deals/${projectId}`, { currentStage: newStage });
-      console.log('✅ Stage update response:', response.data);
-      
-      // Update the project locally and refresh columns
-      setProjects(prevProjects => {
-        const updatedProjects = prevProjects.map(project => 
-          project._id === projectId 
-            ? { ...project, currentStage: newStage }
-            : project
-        );
-        // Update columns immediately with new project data
-        updateColumns(updatedProjects);
-        return updatedProjects;
-      });
-    } catch (err: any) {
-      console.error('❌ Failed to update project stage:', err);
-      setError('Failed to update project stage');
+    // If dropping on the same stage, just cancel
+    if (project.currentStage === newStageId) {
+      setActiveId(null);
+      return;
     }
-  };
 
-  const handleCardClick = (project: Project) => {
-    console.log('Card clicked:', project.projectName);
-    setViewingProject(project);
-    setOpenViewDialog(true);
-  };
+    // Validate that the new stage exists
+    const validStage = stages.find(stage => stage.id === newStageId);
+    if (!validStage) {
+      setActiveId(null);
+      return;
+    }
 
-  const handleEditProject = (project: Project) => {
-    setEditingProject(project);
-    setOpenEditDialog(true);
-  };
+    // Update the project stage locally first for immediate feedback
+    const updatedProjects = projects.map(p => 
+      p._id === projectId ? { ...p, currentStage: newStageId } : p
+    );
+    setProjects(updatedProjects);
 
-  const handleUpdateProject = async () => {
-    if (!editingProject) return;
+    // Update the project stage on the server
+    updateProjectStage(projectId, newStageId);
     
-    try {
-      // Prepare update data
-      const updateData: any = {
-        currentStage: editingProject.currentStage
-      };
-      
-      // Only add notes if there are new notes
-      if (editingProject.notes && editingProject.notes.trim()) {
-        updateData.notes = editingProject.notes.trim();
-        updateData.addedBy = 'Current User'; // You can get this from auth context
-        updateData.noteType = 'general';
-      }
-      
-      await api.put(`/deals/${editingProject._id}`, updateData);
-      
-      // Update local state immediately instead of refetching
-      setProjects(prevProjects => {
-        const updatedProjects = prevProjects.map(project => 
-          project._id === editingProject._id 
-            ? { ...project, currentStage: editingProject.currentStage }
-            : project
-        );
-        // Update columns immediately with new project data
-        updateColumns(updatedProjects);
-        return updatedProjects;
-      });
-      
-      setSnackbar({ open: true, message: 'Project status and notes updated successfully', severity: 'success' });
-      setOpenEditDialog(false);
-      setEditingProject(null);
-    } catch (err: any) {
-      setSnackbar({ open: true, message: 'Failed to update project', severity: 'error' });
-      console.error('Error updating project:', err);
-    }
+    setActiveId(null);
   };
 
-  const resetProjectForm = () => {
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
+  const handleCreateNewProject = () => {
+    setOpenNewProjectDialog(true);
+  };
+
+  const handleSaveNewProject = async () => {
+    try {
+      // Create a new project with the form data
+      const projectData = {
+        projectName: newProject.projectName,
+        clientName: newProject.clientName,
+        clientEmail: newProject.clientEmail,
+        clientPhone: newProject.clientPhone,
+        totalProjectValue: newProject.totalProjectValue,
+        propertyType: {
+          dealType: 'Residential',
+          propertyType: newProject.propertyType
+        },
+        size: {
+          displayText: newProject.size
+        },
+        location: {
+          city: newProject.location,
+          state: 'Karnataka'
+        },
+        currentStage: newProject.currentStage,
+        projectStatus: 'Active',
+        projectStartDate: new Date().toISOString().split('T')[0],
+        expectedCompletionDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+      };
+
+      // For now, we'll add it locally since we don't have a create project API
+      const newProjectId = (projects.length + 1).toString();
+      const createdProject = {
+        _id: newProjectId,
+        dealId: `DEAL-${String(projects.length + 1).padStart(3, '0')}`,
+        ...projectData,
+        clientId: newProjectId,
+        assignedTeam: {
+          assignedDesigner: 'Not assigned',
+          assignedPM: 'Not assigned',
+          assignedSales: 'Not assigned'
+        },
+        designStatus: {
+          design3DStatus: 'Not Started',
+          design3DProgress: 0,
+          moodBoardShared: false
+        },
+        activities: {
+          tasks: []
+        }
+      };
+
+      setProjects([...projects, createdProject]);
+      setSnackbarMessage('New project created successfully!');
+      setSnackbarOpen(true);
+      setOpenNewProjectDialog(false);
+      
+      // Reset form
       setNewProject({
         projectName: '',
-      clientId: '',
+        clientName: '',
+        clientEmail: '',
+        clientPhone: '',
         totalProjectValue: 0,
-      assignedDesigner: '',
-      priorityLevel: 'Medium'
-    });
-    setError('');
-  };
-
-  const handleCreateProject = async () => {
-    try {
-      // Validate required fields
-      if (!newProject.projectName.trim()) {
-        setError('Project name is required');
-        return;
-      }
-      if (!newProject.clientId) {
-        setError('Please select a client');
-        return;
-      }
-
-      const client = clients.find(c => c._id === newProject.clientId);
-      const response = await api.post('/deals', {
-        ...newProject,
-        projectName: newProject.projectName.trim(),
-        currentStage: 'ToDo',
-        projectStatus: 'Active',
-        clientName: client?.name || 'Unknown Client'
+        propertyType: '',
+        size: '',
+        location: '',
+        currentStage: 'Lead Generation'
       });
-      
-      console.log('✅ Project created successfully:', response.data.deal);
-      
-      // Reset form and close dialog
-      resetProjectForm();
-      setOpenCreateDialog(false);
-      
-      // Refresh projects
-      await fetchProjects();
     } catch (err: any) {
-      const errorMessage = err.response?.data?.message || 'Failed to create project';
-      setError(errorMessage);
-      console.error('❌ Error creating project:', err);
+      setSnackbarMessage('Failed to create project');
+      setSnackbarOpen(true);
     }
   };
 
-  const formatCurrency = (value: number) => {
+  const getProjectsByStage = (stageId: string): Project[] => {
+    return projects.filter(project => project.currentStage === stageId);
+  };
+
+  const getProjectHealth = (projectId: string): ProjectHealth | undefined => {
+    return projectHealth.find(health => health.projectId === projectId);
+  };
+
+  const getPropertyIcon = (dealType: string, propertyType: string) => {
+    if (dealType === 'Residential') {
+      return <HomeIcon color="primary" />;
+    } else if (propertyType?.includes('Restaurant')) {
+      return <RestaurantIcon color="primary" />;
+    } else if (propertyType?.includes('Healthcare')) {
+      return <HospitalIcon color="primary" />;
+    } else {
+      return <BusinessIcon color="primary" />;
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'High': return 'error';
+      case 'Medium': return 'warning';
+      case 'Low': return 'success';
+      default: return 'default';
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Active': return 'success';
+      case 'On Hold': return 'warning';
+      case 'Completed': return 'info';
+      case 'Cancelled': return 'error';
+      default: return 'default';
+    }
+  };
+
+  const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
       maximumFractionDigits: 0,
-    }).format(value);
+    }).format(amount);
   };
 
-  const getPropertyIcon = (propertyType: string) => {
-    switch (propertyType?.toLowerCase()) {
-      case 'residential':
-      case 'home':
-        return <HomeIcon fontSize="small" />;
-      case 'commercial':
-      case 'office':
-        return <BusinessIcon fontSize="small" />;
-      case 'restaurant':
-      case 'cafe':
-        return <RestaurantIcon fontSize="small" />;
-      case 'hospital':
-      case 'clinic':
-        return <HospitalIcon fontSize="small" />;
-      default:
-        return <BusinessIcon fontSize="small" />;
-    }
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
+  };
+
+  const handleProjectClick = (project: Project) => {
+    setSelectedProject(project);
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setSelectedProject(null);
   };
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
-        <Typography>Loading Kanban board...</Typography>
+      <Box sx={{ p: 3 }}>
+        <Typography variant="h4" gutterBottom>Project Kanban Board</Typography>
+        <LinearProgress />
       </Box>
     );
   }
 
+  if (error) {
     return (
-    <Box sx={{ p: 3, minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
-      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h4" sx={{ fontWeight: 600, color: '#1976d2' }}>
-          Project Pipeline
-        </Typography>
-        <Typography variant="body2" sx={{ color: '#64748b' }}>
-          Click on project cards to edit • Drag to change status
-        </Typography>
+      <Box sx={{ p: 3 }}>
+        <Typography variant="h4" gutterBottom>Project Kanban Board</Typography>
+        <Typography color="error">{error}</Typography>
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={{ p: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4" gutterBottom>Project Kanban Board</Typography>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={handleCreateNewProject}
+        >
+          New Project
+        </Button>
       </Box>
 
       <DndContext
@@ -408,526 +613,226 @@ const Kanban: React.FC = () => {
         onDragEnd={handleDragEnd}
       >
         <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2 }}>
-          {columns.map((column) => (
-            <KanbanColumn
-              key={column.id}
-              column={column}
-              onCardClick={handleCardClick}
-              onEdit={handleEditProject}
+          {stages.map((stage) => {
+            const stageProjects = getProjectsByStage(stage.id);
+            
+            return (
+              <Box key={stage.id} sx={{ minWidth: '300px', flex: '0 0 300px' }}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    minHeight: '600px',
+                    backgroundColor: stage.color,
+                    borderRadius: 2
+                  }}
+                >
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                      {stage.title}
+                    </Typography>
+                    <Badge badgeContent={stageProjects.length} color="primary">
+                      <Typography variant="body2" color="text.secondary">
+                        {stageProjects.length} projects
+                      </Typography>
+                    </Badge>
+                  </Box>
+                  
+                  <Divider sx={{ mb: 2 }} />
+                  
+                  <SortableContext 
+                    id={stage.id} 
+                    items={stageProjects.map(p => p._id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      {stageProjects.map((project) => (
+                        <SortableProjectCard
+                          key={project._id}
+                          project={project}
+                          onCardClick={handleProjectClick}
+                          healthData={getProjectHealth(project._id)}
                         />
                   ))}
+                  
+                  {stageProjects.length === 0 && (
+                    <Box sx={{ textAlign: 'center', py: 4 }}>
+                      <Typography variant="body2" color="text.secondary">
+                        No projects in this stage
+                      </Typography>
+                    </Box>
+                  )}
+                    </Box>
+                  </SortableContext>
+                </Paper>
+            </Box>
+          );
+        })}
         </Box>
 
         <DragOverlay>
-          {activeProject ? (
-            <ProjectCard project={activeProject} isDragging />
+          {activeId ? (
+            <Card sx={{ 
+              opacity: 0.8,
+              transform: 'rotate(5deg)',
+              boxShadow: 3
+            }}>
+              <CardContent>
+                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                  {projects.find(p => p._id === activeId)?.projectName}
+                </Typography>
+              </CardContent>
+            </Card>
           ) : null}
         </DragOverlay>
       </DndContext>
 
-      {/* Create Project Dialog */}
-      <Dialog 
-        open={openCreateDialog} 
-        onClose={() => setOpenCreateDialog(false)} 
-        maxWidth="md" 
-        fullWidth
-        disableEscapeKeyDown={false}
-        aria-labelledby="create-project-dialog"
-      >
-        <DialogTitle id="create-project-dialog">Create New Project</DialogTitle>
+      {/* Project Details Dialog */}
+      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
+        <DialogTitle>
+          Project Details - {selectedProject?.projectName}
+        </DialogTitle>
         <DialogContent>
-          <Box sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {selectedProject && (
+            <Box>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+                <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
+                  <Typography variant="h6" gutterBottom>Project Information</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Client:</strong> {selectedProject.clientName}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Project ID:</strong> {selectedProject.dealId}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Property Type:</strong> {selectedProject.propertyType?.propertyType || 'Not specified'}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Size:</strong> {selectedProject.size?.displayText || 'Not specified'}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Location:</strong> {selectedProject.location?.city || 'City TBD'}, {selectedProject.location?.state || 'State TBD'}
+                  </Typography>
+                </Box>
+                <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
+                  <Typography variant="h6" gutterBottom>Team & Status</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Designer:</strong> {selectedProject.assignedTeam?.assignedDesigner || 'Not assigned'}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Project Manager:</strong> {selectedProject.assignedTeam?.assignedPM || 'Not assigned'}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Status:</strong> {selectedProject.projectStatus}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Stage:</strong> {selectedProject.currentStage}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Value:</strong> {formatCurrency(selectedProject.totalProjectValue)}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>Close</Button>
+          <Button variant="contained" onClick={handleCloseDialog}>
+            Edit Project
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* New Project Dialog */}
+      <Dialog open={openNewProjectDialog} onClose={() => setOpenNewProjectDialog(false)} maxWidth="md" fullWidth>
+        <DialogTitle>Create New Project</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
             <TextField
-              fullWidth
               label="Project Name"
               value={newProject.projectName}
               onChange={(e) => setNewProject({...newProject, projectName: e.target.value})}
-            />
-            <ClientDropdown
-              value={newProject.clientId}
-              onChange={(value) => setNewProject({...newProject, clientId: value})}
-              label="Client"
+              fullWidth
               required
             />
             <TextField
+              label="Client Name"
+              value={newProject.clientName}
+              onChange={(e) => setNewProject({...newProject, clientName: e.target.value})}
               fullWidth
-              label="Project Value (₹)"
-              type="number"
-              value={newProject.totalProjectValue}
-              onChange={(e) => setNewProject({...newProject, totalProjectValue: Number(e.target.value)})}
+              required
             />
-            <DesignerDropdown
-              value={newProject.assignedDesigner}
-              onChange={(value) => setNewProject({...newProject, assignedDesigner: value})}
-              label="Assigned Designer"
-              filterByAvailability="Available"
+            <TextField
+              label="Client Email"
+              value={newProject.clientEmail}
+              onChange={(e) => setNewProject({...newProject, clientEmail: e.target.value})}
+              fullWidth
+              type="email"
+            />
+            <TextField
+              label="Client Phone"
+              value={newProject.clientPhone}
+              onChange={(e) => setNewProject({...newProject, clientPhone: e.target.value})}
+              fullWidth
+            />
+            <TextField
+              label="Project Value (₹)"
+              value={newProject.totalProjectValue}
+              onChange={(e) => setNewProject({...newProject, totalProjectValue: parseFloat(e.target.value) || 0})}
+              fullWidth
+              type="number"
+            />
+            <TextField
+              label="Property Type"
+              value={newProject.propertyType}
+              onChange={(e) => setNewProject({...newProject, propertyType: e.target.value})}
+              fullWidth
+            />
+            <TextField
+              label="Size"
+              value={newProject.size}
+              onChange={(e) => setNewProject({...newProject, size: e.target.value})}
+              fullWidth
+            />
+            <TextField
+              label="Location"
+              value={newProject.location}
+              onChange={(e) => setNewProject({...newProject, location: e.target.value})}
+              fullWidth
             />
             <FormControl fullWidth>
-              <InputLabel>Priority Level</InputLabel>
+              <InputLabel>Initial Stage</InputLabel>
               <Select
-                value={newProject.priorityLevel}
-                onChange={(e) => setNewProject({...newProject, priorityLevel: e.target.value})}
+                value={newProject.currentStage}
+                label="Initial Stage"
+                onChange={(e) => setNewProject({...newProject, currentStage: e.target.value})}
               >
-                <MenuItem value="Low">Low</MenuItem>
-                <MenuItem value="Medium">Medium</MenuItem>
-                <MenuItem value="High">High</MenuItem>
+                {stages.map(stage => (
+                  <MenuItem key={stage.id} value={stage.id}>{stage.title}</MenuItem>
+                ))}
               </Select>
             </FormControl>
-                </Box>
+          </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => {
-            resetProjectForm();
-            setOpenCreateDialog(false);
-          }}>
-            Cancel
-          </Button>
-          <Button onClick={handleCreateProject} variant="contained">
+          <Button onClick={() => setOpenNewProjectDialog(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleSaveNewProject}>
             Create Project
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Quick Edit Project Dialog - Status & Notes Only */}
-      <Dialog
-        open={openEditDialog}
-        onClose={() => setOpenEditDialog(false)}
-        maxWidth="sm"
-        fullWidth
-        disableEscapeKeyDown={false}
-        aria-labelledby="edit-project-dialog"
-      >
-        <DialogTitle id="edit-project-dialog">
-          Quick Edit: {editingProject?.projectName}
-        </DialogTitle>
-        <DialogContent>
-          <Box sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 3 }}>
-            {/* Current Project Info (Read-only) */}
-            <Box sx={{ p: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                Project Details
-                  </Typography>
-              <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                {editingProject?.projectName}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                Client: {editingProject?.clientName} • Value: ₹{editingProject?.totalProjectValue?.toLocaleString()}
-                  </Typography>
-                </Box>
-
-            {/* Status Change */}
-            <FormControl fullWidth>
-              <InputLabel>Current Stage</InputLabel>
-              <Select
-                value={editingProject?.currentStage || ''}
-                onChange={(e) => setEditingProject(prev => prev ? {...prev, currentStage: e.target.value} : null)}
-                label="Current Stage"
-              >
-                {stages.map(stage => (
-                  <MenuItem key={stage} value={stage}>
-                    {stage}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            {/* Notes */}
-            <TextField
-              label="Project Notes"
-              value={editingProject?.notes || ''}
-              onChange={(e) => setEditingProject(prev => prev ? {...prev, notes: e.target.value} : null)}
-              fullWidth
-              multiline
-              rows={4}
-              placeholder="Add notes, comments, or updates about this project..."
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenEditDialog(false)}>
-            Cancel
-          </Button>
-          <Button onClick={handleUpdateProject} variant="contained">
-            Update Status & Notes
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* View Project Details Dialog */}
-      <Dialog
-        open={openViewDialog}
-        onClose={() => setOpenViewDialog(false)}
-        maxWidth="md"
-        fullWidth
-        aria-labelledby="view-project-dialog"
-      >
-        <DialogTitle id="view-project-dialog">Project Details</DialogTitle>
-        <DialogContent>
-          {viewingProject && (
-            <Box sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-            <TextField
-              label="Project Name"
-              value={viewingProject.projectName}
-              InputProps={{ readOnly: true }}
-              fullWidth
-            />
-            <TextField
-              label="Client"
-              value={viewingProject.clientName}
-              InputProps={{ readOnly: true }}
-              fullWidth
-            />
-            <TextField
-              label="Current Stage"
-              value={viewingProject.currentStage}
-              InputProps={{ readOnly: true }}
-              fullWidth
-            />
-            <TextField
-              label="Project Status"
-              value={viewingProject.projectStatus}
-              InputProps={{ readOnly: true }}
-              fullWidth
-            />
-            <TextField
-              label="Project Value (₹)"
-              value={viewingProject.totalProjectValue?.toLocaleString() || '0'}
-              InputProps={{ readOnly: true }}
-              fullWidth
-            />
-            <TextField
-              label="Assigned Designer"
-              value={viewingProject.assignedDesigner || 'Not assigned'}
-              InputProps={{ readOnly: true }}
-              fullWidth
-            />
-            <TextField
-              label="Priority Level"
-              value={viewingProject.priorityLevel || 'Medium'}
-              InputProps={{ readOnly: true }}
-              fullWidth
-            />
-            <TextField
-              label="Project ID"
-              value={viewingProject._id || 'N/A'}
-              InputProps={{ readOnly: true }}
-              fullWidth
-            />
-              </Box>
-              
-              {viewingProject.propertyType && (
-                <TextField
-                  label="Property Type"
-                  value={viewingProject.propertyType.propertyType || 'Not specified'}
-                  InputProps={{ readOnly: true }}
-                  fullWidth
-                />
-              )}
-              
-              {viewingProject.location && (
-                <TextField
-                  label="Location"
-                  value={`${viewingProject.location.city}, ${viewingProject.location.state}`}
-                  InputProps={{ readOnly: true }}
-                  fullWidth
-                />
-              )}
-              
-              {/* Notes History Section */}
-              {viewingProject.notesHistory && viewingProject.notesHistory.length > 0 && (
-                <Box sx={{ mt: 3 }}>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#1976d2' }}>
-                    Notes History
-                  </Typography>
-                  <Box sx={{ maxHeight: '300px', overflowY: 'auto', border: '1px solid #e0e0e0', borderRadius: 1, p: 2 }}>
-                    {viewingProject.notesHistory.map((note, index) => (
-                      <Box key={note.id} sx={{ mb: 2, pb: 2, borderBottom: index < viewingProject.notesHistory!.length - 1 ? '1px solid #f0f0f0' : 'none' }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                          <Typography variant="body2" sx={{ fontWeight: 600, color: '#333' }}>
-                            {note.addedBy}
-                          </Typography>
-                          <Typography variant="caption" sx={{ color: '#666' }}>
-                            {new Date(note.addedAt).toLocaleString()}
-                          </Typography>
-                        </Box>
-                        <Typography variant="body2" sx={{ color: '#555', lineHeight: 1.5 }}>
-                          {note.content}
-                        </Typography>
-                        <Chip 
-                          label={note.type.replace('_', ' ')} 
-                          size="small" 
-                          sx={{ mt: 1, fontSize: '0.7rem', height: '20px' }}
-                          color={note.type === 'status_change' ? 'warning' : note.type === 'design_change' ? 'info' : 'default'}
-                        />
-                      </Box>
-                    ))}
-                  </Box>
-                </Box>
-              )}
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenViewDialog(false)}>
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
-
       <Snackbar
-        open={!!error}
-        autoHideDuration={6000}
-        onClose={() => setError('')}
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <Alert onClose={() => setError('')} severity="error" sx={{ width: '100%' }}>
-          {error}
-        </Alert>
-      </Snackbar>
-
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-      >
-        <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity}>
-          {snackbar.message}
+        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+          {snackbarMessage}
         </Alert>
       </Snackbar>
     </Box>
-  );
-};
-
-// Kanban Column Component
-const KanbanColumn: React.FC<{
-  column: KanbanColumn;
-  onCardClick: (project: Project) => void;
-  onEdit?: (project: Project) => void;
-}> = ({ column, onCardClick, onEdit }) => {
-  const { setNodeRef } = useDroppable({
-    id: column.id,
-    data: {
-      type: 'column',
-      stage: column.id
-    }
-  });
-
-  return (
-    <Box
-      ref={setNodeRef}
-      sx={{
-        minWidth: 300,
-        backgroundColor: '#ffffff',
-        borderRadius: 2,
-        p: 2,
-        height: 'fit-content',
-        maxHeight: '80vh',
-        overflow: 'hidden',
-        border: '1px solid #e0e0e0',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-      }}
-    >
-      {/* Column Header */}
-      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h6" sx={{ fontWeight: 800, color: '#000000', fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-          {column.title}
-        </Typography>
-        <Chip 
-          label={column.projects.length} 
-          size="small" 
-          sx={{ backgroundColor: '#1976d2', color: 'white', fontWeight: 600 }}
-        />
-      </Box>
-
-      {/* Projects */}
-      <SortableContext items={column.projects.map(p => p._id)}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, maxHeight: '70vh', overflowY: 'auto' }}>
-          {column.projects.length === 0 ? (
-            <Box sx={{ 
-              p: 3, 
-              textAlign: 'center', 
-              border: '2px dashed #1976d2',
-              borderRadius: 2,
-              backgroundColor: '#f8f9fa'
-            }}>
-              <Typography variant="body2" sx={{ color: '#1976d2', fontWeight: 600 }}>
-                No projects in this stage
-              </Typography>
-              <Typography variant="caption" sx={{ color: '#666', display: 'block', mt: 1 }}>
-                Drag projects here or create new ones
-              </Typography>
-            </Box>
-          ) : (
-            column.projects.map((project) => (
-              <ProjectCard
-                key={project._id}
-                project={project}
-                onCardClick={onCardClick}
-                onEdit={onEdit}
-              />
-            ))
-          )}
-        </Box>
-      </SortableContext>
-    </Box>
-  );
-};
-
-// Project Card Component
-const ProjectCard: React.FC<{
-  project: Project;
-  onCardClick?: (project: Project) => void;
-  onEdit?: (project: Project) => void;
-  isDragging?: boolean;
-}> = ({ project, onCardClick, onEdit, isDragging = false }) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging: isSortableDragging,
-  } = useSortable({ 
-    id: project._id,
-    data: {
-      type: 'project',
-      project: project
-    }
-  });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0,
-    }).format(value);
-  };
-
-  return (
-    <Card
-      ref={setNodeRef}
-      style={style}
-      elevation={isSortableDragging ? 4 : 1}
-      sx={{
-        cursor: 'grab',
-        borderRadius: 2,
-        transition: 'all 0.2s ease',
-        '&:hover': { 
-          transform: 'translateY(-1px)',
-          boxShadow: 3,
-        },
-        '&:active': {
-          cursor: 'grabbing',
-        },
-        borderLeft: `3px solid ${project.projectStatus === 'Active' ? '#4caf50' : '#9e9e9e'}`,
-      }}
-      {...attributes}
-      {...listeners}
-      onClick={() => onCardClick?.(project)}
-    >
-      <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-        {/* Project Title */}
-        <Typography variant="subtitle2" sx={{ 
-          fontWeight: 600,
-          mb: 1,
-          fontSize: '0.95rem',
-          lineHeight: 1.3,
-          color: '#1976d2'
-        }}>
-          {project.projectName}
-        </Typography>
-        
-        {/* Client Name */}
-        <Typography variant="body2" sx={{ 
-          mb: 1.5, 
-          color: '#333',
-          fontSize: '0.85rem',
-          fontWeight: 500
-        }}>
-          {project.clientName}
-        </Typography>
-
-        {/* Project Value */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
-          <MoneyIcon sx={{ fontSize: '0.9rem', color: '#4caf50' }} />
-          <Typography variant="body2" sx={{ 
-            color: '#4caf50',
-            fontSize: '0.85rem',
-            fontWeight: 600
-          }}>
-            ₹{project.totalProjectValue.toLocaleString()}
-          </Typography>
-        </Box>
-
-        {/* Status & Team */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-          <Chip 
-            label={project.projectStatus} 
-            size="small" 
-            sx={{ 
-              backgroundColor: project.projectStatus === 'Active' ? '#4caf50' : '#757575',
-              color: 'white',
-              fontSize: '0.7rem',
-              height: 20,
-              fontWeight: 600
-            }} 
-          />
-          {project.assignedDesigner && (
-            <Avatar sx={{ width: 24, height: 24, fontSize: '0.7rem' }}>
-              {project.assignedDesigner.charAt(0)}
-            </Avatar>
-          )}
-        </Box>
-
-        {/* Action Buttons */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Tooltip title="Edit Project">
-              <IconButton
-                size="small"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  onEdit?.(project);
-                }}
-                onMouseDown={(e) => e.stopPropagation()}
-                sx={{ 
-                  color: '#1976d2',
-                  '&:hover': { backgroundColor: '#e3f2fd' }
-                }}
-              >
-                <EditIcon sx={{ fontSize: '1rem' }} />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="View Details">
-              <IconButton
-                size="small"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  onCardClick?.(project);
-                }}
-                onMouseDown={(e) => e.stopPropagation()}
-                sx={{ 
-                  color: '#1976d2',
-                  '&:hover': { backgroundColor: '#e3f2fd' }
-                }}
-              >
-                <ViewIcon sx={{ fontSize: '1rem' }} />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        </Box>
-      </CardContent>
-    </Card>
   );
 };
 
