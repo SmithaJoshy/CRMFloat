@@ -9,19 +9,18 @@ const multer = require('multer');
 require('dotenv').config();
 
 // Get industry package from environment
-const INDUSTRY_PACKAGE = process.env.INDUSTRY_PACKAGE || 'generic';
-const TENANT_ID = process.env.TENANT_ID || 'generic';
+// GHS Interior Design CRM - Main Configuration
+const INDUSTRY_PACKAGE = 'interior-design';
+const TENANT_ID = 'ghs';
 console.log(`🎯 Loading ${INDUSTRY_PACKAGE} industry package`);
 
-// Load GHS branding configuration if it's a GHS tenant
+// Load GHS branding configuration
 let ghsBranding = null;
-if (TENANT_ID === 'ghs' || INDUSTRY_PACKAGE === 'interior-design') {
-  try {
-    ghsBranding = require('./ghs-customization/config/ghs-branding.json');
-    console.log(`🎨 GHS branding loaded: ${ghsBranding.company.name}`);
-  } catch (error) {
-    console.log(`⚠️  GHS branding not found, using default branding`);
-  }
+try {
+  ghsBranding = require('./ghs-customization/config/ghs-branding.json');
+  console.log(`🎨 GHS branding loaded: ${ghsBranding.company.name}`);
+} catch (error) {
+  console.log(`⚠️  GHS branding not found, using default branding`);
 }
 
 // Industry-specific mock data generator
@@ -436,8 +435,8 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 // Health check endpoint for deployment
 app.get('/api/health', (req, res) => {
   const branding = ghsBranding || {
-    company: { name: 'CRMFloat', shortName: 'CRMFloat' },
-    company: { tagline: 'Simple CRM for Startups' }
+    company: { name: 'GHS Design Studio', shortName: 'GHS' },
+    company: { tagline: 'Creating Beautiful Spaces' }
   };
   
   res.status(200).json({ 
@@ -4077,8 +4076,8 @@ app.get('*', (req, res) => {
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
   const branding = ghsBranding || {
-    company: { name: 'CRMFloat', shortName: 'CRMFloat' },
-    company: { tagline: 'Simple CRM for Startups' }
+    company: { name: 'GHS Design Studio', shortName: 'GHS' },
+    company: { tagline: 'Creating Beautiful Spaces' }
   };
   
   console.log(`🚀 ${branding.company.name} Server running on port ${PORT}`);
@@ -4089,21 +4088,12 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🔧 API endpoints available at /api`);
   console.log(`📱 Frontend served from root path`);
   console.log(`\n🔑 Demo Login Credentials:`);
-  if (TENANT_ID === 'ghs') {
-    console.log(`   Email: admin@ghs.crmfloat.io`);
-  } else {
-    console.log(`   Email: admin@crmfloat.com`);
-  }
+  console.log(`   Email: admin@ghs.crmfloat.io`);
   console.log(`   Password: admin123`);
   console.log(`\n💾 Using Enhanced Mock Database (In-Memory)`);
-  if (INDUSTRY_PACKAGE === 'interior-design') {
-    console.log(`   - Interior Design workflow (11 stages)`);
-    console.log(`   - Design-specific features enabled`);
-    console.log(`   - GHS branding and customization`);
-  } else {
-    console.log(`   - Generic CRM workflow (6 stages)`);
-    console.log(`   - Retail/Small business sample data`);
-  }
+  console.log(`   - Interior Design workflow (11 stages)`);
+  console.log(`   - Design-specific features enabled`);
+  console.log(`   - GHS branding and customization`);
   console.log(`   - All data is stored in memory`);
   console.log(`   - Data will be lost when server restarts`);
   console.log(`   - Perfect for testing and development`);
