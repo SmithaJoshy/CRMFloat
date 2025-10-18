@@ -101,7 +101,7 @@ const Login: React.FC = () => {
               Demo Credentials:
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Email: admin@ghs.crmfloat.io
+              Email: admin@designpipeline.com
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Password: admin123

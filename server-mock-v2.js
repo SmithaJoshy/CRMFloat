@@ -56,6 +56,60 @@ const getIndustryData = (industryPackage) => {
           totalValue: 75000,
           leadSource: 'Referral',
           stylePreferences: ['Contemporary', 'Family-friendly']
+        },
+        {
+          _id: '3',
+          name: 'Mike Chen',
+          email: 'mike.chen@email.com',
+          phone: '+1 (555) 345-6789',
+          company: 'TechStart Inc',
+          address: '789 Business Blvd, San Francisco, CA 94105',
+          createdAt: new Date('2024-01-25'),
+          updatedAt: new Date('2024-01-25'),
+          tags: ['VIP', 'Commercial'],
+          notes: 'Tech startup looking for modern office design',
+          isActive: true,
+          clientId: 'CLI-003',
+          targetBudget: 200000,
+          totalValue: 200000,
+          leadSource: 'Website',
+          stylePreferences: ['Professional', 'Modern']
+        },
+        {
+          _id: '4',
+          name: 'Emma Wilson',
+          email: 'emma.wilson@email.com',
+          phone: '+1 (555) 456-7890',
+          company: 'Wilson Estate',
+          address: '1000 Hillside Dr, Beverly Hills, CA 90210',
+          createdAt: new Date('2023-12-01'),
+          updatedAt: new Date('2024-01-30'),
+          tags: ['VIP', 'Luxury'],
+          notes: 'High-end luxury villa interior design',
+          isActive: true,
+          clientId: 'CLI-004',
+          targetBudget: 500000,
+          totalValue: 500000,
+          leadSource: 'Referral',
+          stylePreferences: ['Luxury', 'Elegant']
+        },
+        {
+          _id: '5',
+          name: 'Carlos Rodriguez',
+          email: 'carlos.rodriguez@email.com',
+          phone: '+1 (555) 567-8901',
+          company: 'Rodriguez Restaurant Group',
+          address: '555 Restaurant Row, San Francisco, CA 94102',
+          createdAt: new Date('2023-09-15'),
+          updatedAt: new Date('2024-01-28'),
+          tags: ['Commercial', 'Repeat Customer'],
+          notes: 'Restaurant chain owner, multiple locations',
+          isActive: true,
+          clientId: 'CLI-005',
+          targetBudget: 300000,
+          totalValue: 300000,
+          leadSource: 'Referral',
+          stylePreferences: ['Contemporary', 'Functional']
         }
       ],
       deals: [
@@ -65,7 +119,7 @@ const getIndustryData = (industryPackage) => {
           projectName: 'Modern Apartment Design',
           clientId: '1',
           clientName: 'John Smith',
-          currentStage: 'In Progress',
+          currentStage: 'Design Development',
           projectStatus: 'Active',
           projectValue: 125000,
           totalProjectValue: 125000,
@@ -90,6 +144,110 @@ const getIndustryData = (industryPackage) => {
               timestamp: new Date('2024-01-15T10:00:00Z')
             }
           ]
+        },
+        {
+          _id: '2',
+          dealId: 'DEAL-002',
+          projectName: 'Kitchen Renovation',
+          clientId: '2',
+          clientName: 'Sarah Johnson',
+          currentStage: 'Lead Generation',
+          projectStatus: 'Active',
+          projectValue: 75000,
+          totalProjectValue: 75000,
+          expectedStartDate: new Date('2024-03-01'),
+          expectedCompletionDate: new Date('2024-06-01'),
+          assignedDesigner: 'Bob Architect',
+          priorityLevel: 'Medium',
+          propertyType: 'Residential',
+          dealType: 'Interior Design',
+          projectSize: 800,
+          designStyle: 'Contemporary',
+          roomsIncluded: ['Kitchen', 'Dining Room'],
+          siteAddress: '456 Oak Ave, Los Angeles, CA 90210',
+          createdAt: new Date('2024-01-20'),
+          updatedAt: new Date('2024-01-20'),
+          notes: 'Kitchen renovation with modern appliances',
+          isActive: true,
+          notesHistory: []
+        },
+        {
+          _id: '3',
+          dealId: 'DEAL-003',
+          projectName: 'Office Space Design',
+          clientId: '3',
+          clientName: 'Mike Chen',
+          currentStage: 'Consultation',
+          projectStatus: 'Active',
+          projectValue: 200000,
+          totalProjectValue: 200000,
+          expectedStartDate: new Date('2024-04-01'),
+          expectedCompletionDate: new Date('2024-08-01'),
+          assignedDesigner: 'Alice Designer',
+          priorityLevel: 'High',
+          propertyType: 'Commercial',
+          dealType: 'Interior Design',
+          projectSize: 2500,
+          designStyle: 'Professional',
+          roomsIncluded: ['Reception', 'Conference Room', 'Open Office'],
+          siteAddress: '789 Business Blvd, San Francisco, CA 94105',
+          createdAt: new Date('2024-01-25'),
+          updatedAt: new Date('2024-01-25'),
+          notes: 'Modern office space for tech startup',
+          isActive: true,
+          notesHistory: []
+        },
+        {
+          _id: '4',
+          dealId: 'DEAL-004',
+          projectName: 'Luxury Villa Interior',
+          clientId: '4',
+          clientName: 'Emma Wilson',
+          currentStage: 'Project Execution',
+          projectStatus: 'Active',
+          projectValue: 500000,
+          totalProjectValue: 500000,
+          expectedStartDate: new Date('2024-01-01'),
+          expectedCompletionDate: new Date('2024-12-01'),
+          assignedDesigner: 'Bob Architect',
+          priorityLevel: 'High',
+          propertyType: 'Residential',
+          dealType: 'Interior Design',
+          projectSize: 5000,
+          designStyle: 'Luxury',
+          roomsIncluded: ['Living Room', 'Kitchen', 'Master Bedroom', 'Guest Rooms', 'Home Office'],
+          siteAddress: '1000 Hillside Dr, Beverly Hills, CA 90210',
+          createdAt: new Date('2023-12-01'),
+          updatedAt: new Date('2024-01-30'),
+          notes: 'High-end luxury villa with premium finishes',
+          isActive: true,
+          notesHistory: []
+        },
+        {
+          _id: '5',
+          dealId: 'DEAL-005',
+          projectName: 'Restaurant Design',
+          clientId: '5',
+          clientName: 'Carlos Rodriguez',
+          currentStage: 'Handover',
+          projectStatus: 'Active',
+          projectValue: 300000,
+          totalProjectValue: 300000,
+          expectedStartDate: new Date('2023-10-01'),
+          expectedCompletionDate: new Date('2024-02-01'),
+          assignedDesigner: 'Alice Designer',
+          priorityLevel: 'Medium',
+          propertyType: 'Commercial',
+          dealType: 'Interior Design',
+          projectSize: 3000,
+          designStyle: 'Contemporary',
+          roomsIncluded: ['Dining Area', 'Kitchen', 'Bar', 'Restrooms'],
+          siteAddress: '555 Restaurant Row, San Francisco, CA 94102',
+          createdAt: new Date('2023-09-15'),
+          updatedAt: new Date('2024-01-28'),
+          notes: 'Modern restaurant with open kitchen concept',
+          isActive: true,
+          notesHistory: []
         }
       ],
       leads: [
@@ -124,6 +282,28 @@ const getIndustryData = (industryPackage) => {
           experience: '5 years',
           isActive: true,
           availability: 'Available'
+        },
+        {
+          _id: '2',
+          name: 'Bob Architect',
+          email: 'bob@designstudio.com',
+          phone: '+1 (555) 100-0002',
+          role: 'Lead Architect',
+          specialization: 'Commercial Design',
+          experience: '8 years',
+          isActive: true,
+          availability: 'Available'
+        },
+        {
+          _id: '3',
+          name: 'Carol Interior',
+          email: 'carol@designstudio.com',
+          phone: '+1 (555) 100-0003',
+          role: 'Interior Designer',
+          specialization: 'Luxury Residential',
+          experience: '6 years',
+          isActive: true,
+          availability: 'Busy'
         }
       ],
       invoices: [],
@@ -432,6 +612,91 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
     version: '1.0.0'
   });
+});
+
+// Workflow stages endpoint
+app.get('/api/workflow-stages', (req, res) => {
+  const workflowStages = [
+    {
+      id: 'lead-generation',
+      name: 'Lead Generation',
+      description: 'Initial lead capture and qualification',
+      color: '#2196F3',
+      icon: 'person_add'
+    },
+    {
+      id: 'initial-engagement',
+      name: 'Initial Engagement',
+      description: 'First contact with potential client',
+      color: '#00BCD4',
+      icon: 'handshake'
+    },
+    {
+      id: 'scheduling-visit',
+      name: 'Scheduling Visit',
+      description: 'Site visit appointment scheduled',
+      color: '#4CAF50',
+      icon: 'schedule'
+    },
+    {
+      id: 'consultation',
+      name: 'Consultation',
+      description: 'Site visit completed, requirements gathered',
+      color: '#8BC34A',
+      icon: 'room_preferences'
+    },
+    {
+      id: 'design-brief',
+      name: 'Design Brief',
+      description: 'Design proposal and quotation prepared',
+      color: '#CDDC39',
+      icon: 'description'
+    },
+    {
+      id: 'design-development',
+      name: 'Design Development',
+      description: 'Design concepts and mood boards',
+      color: '#FFC107',
+      icon: 'palette'
+    },
+    {
+      id: 'detailed-drawings',
+      name: 'Detailed Drawings',
+      description: 'Technical drawings and vendor selection',
+      color: '#FF9800',
+      icon: 'architecture'
+    },
+    {
+      id: 'project-execution',
+      name: 'Project Execution',
+      description: 'Active construction/implementation',
+      color: '#FF5722',
+      icon: 'construction'
+    },
+    {
+      id: 'handover',
+      name: 'Handover',
+      description: 'Project completion and client handover',
+      color: '#9C27B0',
+      icon: 'home'
+    },
+    {
+      id: 'project-closure',
+      name: 'Project Closure',
+      description: 'Final sign-off and documentation',
+      color: '#4CAF50',
+      icon: 'check_circle'
+    },
+    {
+      id: 'warranty-period',
+      name: 'Warranty Period',
+      description: 'Post-completion warranty support',
+      color: '#2196F3',
+      icon: 'verified_user'
+    }
+  ];
+  
+  res.json({ stages: workflowStages });
 });
 
 // Mock Database (In-Memory) - Enhanced Structure
