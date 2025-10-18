@@ -430,11 +430,11 @@ const Designers: React.FC = () => {
                     Skills:
                   </Typography>
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
-                    {designer.skills.slice(0, 3).map((skill, index) => (
+                    {(designer.skills || []).slice(0, 3).map((skill, index) => (
                       <Chip key={index} label={skill} size="small" variant="outlined" />
                     ))}
-                    {designer.skills.length > 3 && (
-                      <Chip label={`+${designer.skills.length - 3}`} size="small" variant="outlined" />
+                    {(designer.skills || []).length > 3 && (
+                      <Chip label={`+${(designer.skills || []).length - 3}`} size="small" variant="outlined" />
                     )}
                   </Box>
 
@@ -442,11 +442,11 @@ const Designers: React.FC = () => {
                     Specializations:
                   </Typography>
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {designer.specializations.slice(0, 2).map((spec, index) => (
+                    {(designer.specializations || []).slice(0, 2).map((spec, index) => (
                       <Chip key={index} label={spec} size="small" color="primary" variant="outlined" />
                     ))}
-                    {designer.specializations.length > 2 && (
-                      <Chip label={`+${designer.specializations.length - 2}`} size="small" color="primary" variant="outlined" />
+                    {(designer.specializations || []).length > 2 && (
+                      <Chip label={`+${(designer.specializations || []).length - 2}`} size="small" color="primary" variant="outlined" />
                     )}
                   </Box>
                 </Box>

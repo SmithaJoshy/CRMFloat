@@ -588,7 +588,7 @@ const Dashboard: React.FC = () => {
                 Quick Actions
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                {quickActions.slice(0, 4).map((action) => (
+                {(quickActions || []).slice(0, 4).map((action) => (
                   <Button
                     key={action.id}
                     variant="outlined"
